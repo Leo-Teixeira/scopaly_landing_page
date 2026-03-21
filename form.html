@@ -3,8 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Scopaly — Participez &amp; Obtenez votre accès early</title>
-    <meta name="description" content="Aidez-nous a construire le bon outil. 2 minutes, vos donnees restent anonymes, acces early access offert." />
+    <title>Scopaly — Partagez votre avis</title>
+    <meta name="description" content="Aidez-nous a comprendre si le besoin est reel. 2 minutes, anonyme, et vous serez notifie si on lance." />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="color.css" />
@@ -496,7 +496,7 @@
         <div class="header-sub">
           <span>⏱ 2 minutes</span>
           <span>🔒 Anonyme</span>
-          <span>🎯 Acces early access</span>
+          <span>📬 Notifie au lancement</span>
         </div>
       </div>
 
@@ -668,7 +668,7 @@
 
           <div class="question" id="q-email">
             <div class="q-label">Votre email <span class="req">*</span></div>
-            <div class="q-hint">Pour recevoir votre acces early access quand l'outil sera pret</div>
+            <div class="q-hint">Pour etre notifie si on lance — aucun spam, desinscription libre</div>
             <input
               type="email"
               class="form-input"
@@ -682,8 +682,8 @@
             <div class="rgpd-row" id="rgpd-row" onclick="toggleRgpd()">
               <div class="rgpd-box" id="rgpd-box"></div>
               <p class="rgpd-text">
-                J'accepte que mes reponses anonymisees soient utilisees pour ameliorer Scopaly.
-                Mon email sera utilise uniquement pour l'acces early access. <span class="req">*</span>
+                J'accepte que mes reponses anonymisees soient utilisees pour orienter le developpement de Scopaly.
+                Mon email sera utilise uniquement pour m'informer du lancement. <span class="req">*</span>
               </p>
             </div>
             <div class="q-error" id="err-rgpd">Vous devez accepter pour continuer</div>
@@ -692,20 +692,19 @@
 
         <!-- ═══════ SUCCESS ═══════ -->
         <div class="success-screen" id="success-screen">
-          <div class="success-icon">🎉</div>
-          <h2 class="success-title">Merci enormement !</h2>
+          <div class="success-icon">✓</div>
+          <h2 class="success-title">Merci pour votre retour.</h2>
           <p class="success-sub">
-            Vos reponses nous aident a construire un outil qui repond a un <strong style="color:var(--color-text-primary)">vrai besoin</strong> — pas juste une idee en l'air.
+            Vos reponses nous aident a decider si ce projet vaut la peine d'etre developpe — et comment. <strong style="color:var(--color-text-primary)">C'est exactement ce dont on a besoin.</strong>
           </p>
           <div class="position-badge">
-            <div class="position-label">Votre position early access</div>
-            <div>
-              <span class="position-number" id="position-number">#42</span>
-              <span class="position-total">/ 500</span>
+            <div class="position-label">Vous etes dans la liste</div>
+            <div style="font-size:15px;color:var(--color-text-secondary);margin-top:6px;line-height:1.5;">
+              Nous vous ecrirons si Scopaly se lance.
             </div>
           </div>
           <p class="success-disclaimer">
-            On vous tient au courant par email des que le scan sera accessible.
+            Reponses anonymisees · Donnees en France · Desinscription libre a tout moment
           </p>
           <a href="landing.html" class="back-link">
             ← Retour a l'accueil
@@ -990,10 +989,6 @@
 
         const success = document.getElementById('success-screen');
         success.classList.add('show');
-
-        // Random position
-        const pos = Math.floor(Math.random() * 60) + 12;
-        document.getElementById('position-number').textContent = '#' + pos;
 
         // Confetti
         launchConfetti();
