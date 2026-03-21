@@ -1,0 +1,1042 @@
+<!doctype html>
+<html lang="fr" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Scopaly — Participez &amp; Obtenez votre accès early</title>
+    <meta name="description" content="Aidez-nous a construire le bon outil. 2 minutes, vos donnees restent anonymes, acces early access offert." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="color.css" />
+
+    <style>
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+      html { scroll-behavior: smooth; }
+
+      body {
+        font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+        background: var(--color-bg);
+        color: var(--color-text-primary);
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+
+      /* ── Noise ── */
+      body::before {
+        content: '';
+        position: fixed; inset: 0;
+        background: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
+        pointer-events: none; z-index: 0;
+      }
+
+      /* ── Grid background ── */
+      .grid-bg {
+        background-image:
+          linear-gradient(rgba(192,132,252,0.025) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(192,132,252,0.025) 1px, transparent 1px);
+        background-size: 48px 48px;
+      }
+
+      /* ── Animations ── */
+      @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(24px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+      @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+      @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+      @keyframes shimmer {
+        0%   { background-position: -200% center; }
+        100% { background-position:  200% center; }
+      }
+      @keyframes slideIn {
+        from { opacity: 0; transform: translateX(32px); }
+        to   { opacity: 1; transform: translateX(0); }
+      }
+      @keyframes slideOut {
+        from { opacity: 1; transform: translateX(0); }
+        to   { opacity: 0; transform: translateX(-32px); }
+      }
+      @keyframes pop {
+        0%   { transform: scale(0.9); opacity: 0; }
+        70%  { transform: scale(1.04); }
+        100% { transform: scale(1);   opacity: 1; }
+      }
+      @keyframes confetti-fall {
+        0%   { transform: translateY(-20px) rotate(0deg);   opacity: 1; }
+        100% { transform: translateY(120px) rotate(720deg); opacity: 0; }
+      }
+      @keyframes pulseGlow {
+        0%,100% { box-shadow: 0 0 0 rgba(192,132,252,0); }
+        50%      { box-shadow: 0 0 24px rgba(192,132,252,0.35); }
+      }
+
+      .text-gradient {
+        background: linear-gradient(135deg, #c084fc 0%, #ff8c61 60%, #f2cc8f 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      /* ── Layout ── */
+      .page {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        padding: 32px 16px 64px;
+        position: relative; z-index: 1;
+      }
+
+      /* ── Header ── */
+      .form-header {
+        width: 100%; max-width: 540px;
+        text-align: center;
+        margin-bottom: 32px;
+        animation: fadeUp 0.6s ease-out both;
+      }
+      .logo-link {
+        display: inline-flex; align-items: center; gap: 10px;
+        text-decoration: none; margin-bottom: 20px;
+      }
+      .logo-icon {
+        width: 34px; height: 34px; border-radius: 9px;
+        background: linear-gradient(135deg, #c084fc, #ff8c61);
+        display: flex; align-items: center; justify-content: center;
+        box-shadow: 0 0 18px rgba(192,132,252,0.4);
+      }
+      .logo-name {
+        font-size: 20px; font-weight: 800;
+        color: var(--color-text-primary); letter-spacing: -0.02em;
+      }
+      .header-title {
+        font-size: clamp(1.4rem, 4vw, 1.8rem);
+        font-weight: 800; letter-spacing: -0.02em;
+        color: var(--color-text-primary); margin-bottom: 8px;
+        line-height: 1.2;
+      }
+      .header-sub {
+        font-size: 13px; color: var(--color-text-secondary);
+        display: flex; justify-content: center; gap: 16px;
+        flex-wrap: wrap;
+      }
+      .header-sub span { display: flex; align-items: center; gap: 5px; }
+
+      /* ── Progress ── */
+      .progress-wrap {
+        width: 100%; max-width: 540px;
+        margin-bottom: 28px;
+        animation: fadeUp 0.6s 0.1s ease-out both;
+      }
+      .progress-steps {
+        display: flex; align-items: center; margin-bottom: 10px;
+      }
+      .progress-step {
+        display: flex; align-items: center; flex: 1;
+      }
+      .step-bubble {
+        width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 14px; font-weight: 700;
+        transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+        position: relative; z-index: 1;
+      }
+      .step-bubble.done {
+        background: linear-gradient(135deg, #c084fc, #a855f7);
+        color: #fff;
+        box-shadow: 0 0 16px rgba(192,132,252,0.4);
+      }
+      .step-bubble.active {
+        background: var(--color-bg-elevated);
+        border: 2px solid var(--color-primary);
+        color: var(--color-primary);
+        animation: pulseGlow 2s ease-in-out infinite;
+      }
+      .step-bubble.pending {
+        background: var(--color-bg-surface);
+        border: 2px solid var(--color-border-primary);
+        color: var(--color-text-tertiary);
+      }
+      .step-connector {
+        flex: 1; height: 2px;
+        background: var(--color-border-primary);
+        margin: 0 4px;
+        overflow: hidden; border-radius: 1px;
+      }
+      .step-connector-fill {
+        height: 100%; border-radius: 1px;
+        background: linear-gradient(90deg, #c084fc, #a855f7);
+        transition: width 0.5s ease;
+      }
+      .progress-label {
+        font-size: 11px; font-family: 'JetBrains Mono', monospace;
+        color: var(--color-text-tertiary); letter-spacing: 0.04em;
+      }
+      .progress-label .current { color: var(--color-primary); font-weight: 700; }
+
+      /* ── Card ── */
+      .form-card {
+        width: 100%; max-width: 540px;
+        background: var(--color-bg-surface);
+        border: 1px solid var(--color-border-primary);
+        border-radius: 20px;
+        padding: 32px 28px;
+        position: relative; overflow: hidden;
+        animation: fadeUp 0.6s 0.15s ease-out both;
+      }
+      .form-card::before {
+        content: '';
+        position: absolute; top: 0; left: 0; right: 0; height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(192,132,252,0.4), rgba(255,140,97,0.3), transparent);
+      }
+
+      /* ── Step content ── */
+      .step-content {
+        display: none;
+        animation: slideIn 0.35s ease-out both;
+      }
+      .step-content.active { display: block; }
+      .step-content.leaving { animation: slideOut 0.25s ease-in both; }
+
+      .step-tag {
+        font-size: 10px; font-family: 'JetBrains Mono', monospace;
+        color: var(--color-text-tertiary); letter-spacing: 0.1em;
+        text-transform: uppercase; margin-bottom: 20px;
+        display: flex; align-items: center; gap: 8px;
+      }
+      .step-tag::before {
+        content: '';
+        display: block; width: 20px; height: 1px;
+        background: var(--color-border-secondary);
+      }
+
+      /* ── Question ── */
+      .question { margin-bottom: 24px; }
+      .q-label {
+        font-size: 14px; font-weight: 700;
+        color: var(--color-text-primary); margin-bottom: 4px;
+        display: flex; align-items: flex-start; gap: 4px; line-height: 1.4;
+      }
+      .q-label .req { color: var(--color-danger); }
+      .q-hint {
+        font-size: 11px; color: var(--color-text-tertiary);
+        margin-bottom: 12px; font-family: 'JetBrains Mono', monospace;
+      }
+      .q-error {
+        font-size: 11px; color: var(--color-danger);
+        margin-top: 6px; display: none;
+        font-family: 'JetBrains Mono', monospace;
+      }
+      .q-error.show { display: block; }
+
+      /* ── Chips ── */
+      .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+      .chips.grid-2 { display: grid; grid-template-columns: 1fr 1fr; }
+      .chips.grid-1 { display: grid; grid-template-columns: 1fr; }
+
+      .chip {
+        padding: 10px 16px; border-radius: 10px;
+        border: 1.5px solid var(--color-border-primary);
+        background: transparent;
+        color: var(--color-text-secondary);
+        font-size: 13px; font-weight: 500;
+        cursor: pointer; transition: all 0.2s;
+        text-align: left; line-height: 1.4;
+        user-select: none;
+      }
+      .chip:hover {
+        border-color: var(--color-border-secondary);
+        background: rgba(46,21,69,0.4);
+        color: var(--color-text-primary);
+      }
+      .chip.selected {
+        border-color: var(--color-primary);
+        background: var(--color-primary-muted);
+        color: var(--color-text-primary);
+        font-weight: 600;
+      }
+      .chip.selected::before { content: '✓ '; }
+      .chip.error-field { border-color: var(--color-danger) !important; }
+
+      /* Profile chips — bigger */
+      .chip.profile-chip {
+        padding: 16px 18px; text-align: center;
+        display: flex; flex-direction: column; gap: 4px;
+      }
+      .chip.profile-chip .chip-icon { font-size: 20px; }
+      .chip.profile-chip .chip-label { font-size: 14px; font-weight: 700; }
+      .chip.profile-chip .chip-sub { font-size: 11px; color: var(--color-text-tertiary); }
+      .chip.profile-chip.selected .chip-sub { color: var(--color-text-secondary); }
+
+      /* Awareness chips */
+      .chip.awareness-chip {
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 12px 16px;
+      }
+      .chip.awareness-chip .a-label { font-size: 13px; font-weight: 600; }
+      .chip.awareness-chip .a-desc  { font-size: 11px; color: var(--color-text-tertiary); }
+      .chip.awareness-chip.selected .a-desc { color: var(--color-text-secondary); }
+
+      /* Reaction chips — colored */
+      .chip.reaction-chip { padding: 12px 16px; }
+      .chip.reaction-chip.r-indifferent.selected { border-color:#64748b; background:rgba(100,116,139,0.1); }
+      .chip.reaction-chip.r-curieux.selected      { border-color:#fbbf24; background:rgba(251,191,36,0.1); }
+      .chip.reaction-chip.r-interesse.selected    { border-color:#00e68a; background:rgba(0,230,138,0.1); }
+      .chip.reaction-chip.r-mefiant.selected      { border-color:#f87171; background:rgba(248,113,113,0.1); }
+
+      /* ── Pitch box ── */
+      .pitch-box {
+        background: var(--color-bg-surface-alt);
+        border: 1px solid var(--color-border-secondary);
+        border-radius: 12px; padding: 18px 20px;
+        margin-bottom: 24px; position: relative; overflow: hidden;
+      }
+      .pitch-box::before {
+        content: '';
+        position: absolute; top: 0; left: 0; bottom: 0; width: 3px;
+        background: linear-gradient(180deg, #c084fc, #ff8c61);
+      }
+      .pitch-tag {
+        font-size: 10px; font-family: 'JetBrains Mono', monospace;
+        color: var(--color-primary); letter-spacing: 0.08em;
+        margin-bottom: 8px;
+      }
+      .pitch-text {
+        font-size: 14px; color: var(--color-text-secondary);
+        line-height: 1.65;
+      }
+      .pitch-text strong { color: var(--color-text-primary); }
+
+      /* ── Textarea & Input ── */
+      .form-input, .form-textarea {
+        width: 100%; padding: 12px 16px;
+        background: var(--color-bg);
+        border: 1.5px solid var(--color-border-primary);
+        border-radius: 10px; outline: none;
+        color: var(--color-text-primary); font-size: 14px;
+        font-family: inherit; line-height: 1.5;
+        transition: border-color 0.2s, box-shadow 0.2s;
+        resize: none;
+      }
+      .form-input:focus, .form-textarea:focus {
+        border-color: var(--color-primary);
+        box-shadow: 0 0 0 3px rgba(192,132,252,0.12);
+      }
+      .form-input.has-error { border-color: var(--color-danger); }
+      .form-input::placeholder, .form-textarea::placeholder {
+        color: var(--color-text-tertiary);
+      }
+
+      /* ── Checkbox RGPD ── */
+      .rgpd-row {
+        display: flex; align-items: flex-start; gap: 12px;
+        cursor: pointer; padding: 4px 0;
+      }
+      .rgpd-box {
+        width: 20px; height: 20px; border-radius: 5px; flex-shrink: 0;
+        border: 1.5px solid var(--color-border-secondary);
+        background: transparent; margin-top: 1px;
+        display: flex; align-items: center; justify-content: center;
+        transition: all 0.2s;
+      }
+      .rgpd-box.checked {
+        background: linear-gradient(135deg, #c084fc, #a855f7);
+        border-color: #c084fc;
+      }
+      .rgpd-box.error-field { border-color: var(--color-danger); }
+      .rgpd-text {
+        font-size: 12px; color: var(--color-text-secondary); line-height: 1.55;
+      }
+      .rgpd-text .req { color: var(--color-danger); }
+
+      /* ── Nav buttons ── */
+      .form-nav {
+        display: flex; gap: 10px; margin-top: 28px;
+      }
+      .btn-back {
+        padding: 12px 20px; border-radius: 10px;
+        background: transparent; border: 1px solid var(--color-border-primary);
+        color: var(--color-text-tertiary); font-size: 14px; font-weight: 600;
+        cursor: pointer; font-family: inherit;
+        transition: all 0.2s;
+      }
+      .btn-back:hover {
+        border-color: var(--color-border-secondary);
+        color: var(--color-text-secondary);
+      }
+      .btn-next {
+        flex: 1; padding: 13px;
+        border-radius: 10px; border: none;
+        background: var(--color-bg-elevated);
+        color: var(--color-text-primary); font-size: 14px; font-weight: 700;
+        cursor: pointer; font-family: inherit;
+        transition: all 0.2s;
+        display: flex; align-items: center; justify-content: center; gap: 6px;
+      }
+      .btn-next:hover {
+        background: var(--color-bg-overlay);
+        transform: translateY(-1px);
+      }
+      .btn-submit {
+        flex: 1; padding: 14px;
+        border-radius: 10px; border: none;
+        background: linear-gradient(135deg, #c084fc 0%, #a855f7 100%);
+        color: #fff; font-size: 14px; font-weight: 700;
+        cursor: pointer; font-family: inherit;
+        transition: all 0.2s;
+        display: flex; align-items: center; justify-content: center; gap: 8px;
+        box-shadow: 0 4px 20px rgba(192,132,252,0.3);
+      }
+      .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 32px rgba(192,132,252,0.45);
+      }
+      .btn-submit:disabled {
+        background: var(--color-bg-elevated);
+        color: var(--color-text-tertiary);
+        cursor: not-allowed; transform: none;
+        box-shadow: none;
+      }
+
+      /* ── Success screen ── */
+      .success-screen {
+        display: none; flex-direction: column; align-items: center;
+        text-align: center; padding: 48px 28px;
+        animation: pop 0.5s ease-out both;
+      }
+      .success-screen.show { display: flex; }
+      .success-icon {
+        width: 80px; height: 80px; border-radius: 50%;
+        background: linear-gradient(135deg, #c084fc, #ff8c61);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 36px; margin-bottom: 24px;
+        box-shadow: 0 0 48px rgba(192,132,252,0.3);
+      }
+      .success-title {
+        font-size: 24px; font-weight: 800; letter-spacing: -0.02em;
+        color: var(--color-text-primary); margin-bottom: 10px;
+      }
+      .success-sub {
+        font-size: 14px; color: var(--color-text-secondary);
+        line-height: 1.65; max-width: 360px; margin-bottom: 28px;
+      }
+      .position-badge {
+        background: var(--color-bg-surface-alt);
+        border: 1px solid var(--color-border-secondary);
+        border-radius: 14px; padding: 20px 32px;
+        margin-bottom: 20px;
+      }
+      .position-label {
+        font-size: 11px; font-family: 'JetBrains Mono', monospace;
+        color: var(--color-text-tertiary); margin-bottom: 6px;
+      }
+      .position-number {
+        font-size: 40px; font-weight: 900;
+        font-family: 'JetBrains Mono', monospace;
+        color: var(--color-primary); line-height: 1;
+      }
+      .position-total {
+        font-size: 14px; color: var(--color-text-tertiary); margin-left: 4px;
+      }
+      .success-disclaimer {
+        font-size: 12px; color: var(--color-text-tertiary);
+        font-family: 'JetBrains Mono', monospace;
+      }
+      .back-link {
+        margin-top: 24px; font-size: 13px;
+        color: var(--color-text-secondary); text-decoration: none;
+        display: inline-flex; align-items: center; gap: 6px;
+        transition: color 0.2s;
+      }
+      .back-link:hover { color: var(--color-primary); }
+
+      /* Confetti */
+      .confetti-container {
+        position: fixed; top: 0; left: 0; right: 0;
+        pointer-events: none; z-index: 999; overflow: hidden; height: 100vh;
+      }
+      .confetti-piece {
+        position: absolute; width: 8px; height: 8px;
+        border-radius: 2px;
+        animation: confetti-fall 1.5s ease-in forwards;
+      }
+
+      /* ── Footer ── */
+      .form-footer {
+        margin-top: 24px;
+        font-size: 11px; font-family: 'JetBrains Mono', monospace;
+        color: var(--color-text-tertiary); text-align: center;
+        line-height: 1.8;
+      }
+
+      /* ── Responsive ── */
+      @media (max-width: 480px) {
+        .form-card { padding: 24px 18px; border-radius: 16px; }
+        .chips.grid-2 { grid-template-columns: 1fr; }
+      }
+    </style>
+  </head>
+
+  <body class="grid-bg">
+    <div class="confetti-container" id="confetti"></div>
+
+    <div class="page">
+      <!-- Header -->
+      <div class="form-header">
+        <a href="landing.html" class="logo-link">
+          <div class="logo-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          </div>
+          <span class="logo-name">Scopaly</span>
+        </a>
+        <h1 class="header-title">
+          Aidez-nous a construire<br>
+          <span class="text-gradient">le bon outil</span>
+        </h1>
+        <div class="header-sub">
+          <span>⏱ 2 minutes</span>
+          <span>🔒 Anonyme</span>
+          <span>🎯 Acces early access</span>
+        </div>
+      </div>
+
+      <!-- Progress -->
+      <div class="progress-wrap">
+        <div class="progress-steps" id="progress-steps">
+          <!-- injected by JS -->
+        </div>
+        <div class="progress-label">
+          Etape <span class="current" id="step-label-current">1</span> sur 4
+          <span id="step-label-name" style="margin-left:8px;color:var(--color-text-secondary);"></span>
+        </div>
+      </div>
+
+      <!-- Form card -->
+      <div class="form-card" id="form-card">
+
+        <!-- ═══════ STEP 1 ═══════ -->
+        <div class="step-content active" id="step-1">
+          <div class="step-tag">Etape 1/4 — Qui etes-vous</div>
+
+          <div class="question" id="q-profile">
+            <div class="q-label">Vous repondez en tant que... <span class="req">*</span></div>
+            <div class="chips grid-2" id="chips-profile">
+              <div class="chip profile-chip" data-val="particulier">
+                <span class="chip-icon">👤</span>
+                <span class="chip-label">Particulier</span>
+                <span class="chip-sub">Pour moi-meme</span>
+              </div>
+              <div class="chip profile-chip" data-val="pro">
+                <span class="chip-icon">🏢</span>
+                <span class="chip-label">Professionnel</span>
+                <span class="chip-sub">Pour mon entreprise</span>
+              </div>
+            </div>
+            <div class="q-error" id="err-profile">Selectionnez une option</div>
+          </div>
+
+          <div class="question" id="q-age">
+            <div class="q-label">Tranche d'age <span class="req">*</span></div>
+            <div class="chips" id="chips-age">
+              <div class="chip" data-val="18-24">18-24</div>
+              <div class="chip" data-val="25-34">25-34</div>
+              <div class="chip" data-val="35-44">35-44</div>
+              <div class="chip" data-val="45-54">45-54</div>
+              <div class="chip" data-val="55+">55+</div>
+            </div>
+            <div class="q-error" id="err-age">Selectionnez votre tranche d'age</div>
+          </div>
+        </div>
+
+        <!-- ═══════ STEP 2 ═══════ -->
+        <div class="step-content" id="step-2">
+          <div class="step-tag">Etape 2/4 — Votre perception</div>
+
+          <div class="question" id="q-awareness">
+            <div class="q-label">Votre niveau de connaissance sur votre "presence en ligne" ? <span class="req">*</span></div>
+            <div class="chips grid-1" id="chips-awareness">
+              <div class="chip awareness-chip" data-val="aucune">
+                <span class="a-label">Aucune idee</span>
+                <span class="a-desc">Je n'y ai jamais pense</span>
+              </div>
+              <div class="chip awareness-chip" data-val="vague">
+                <span class="a-label">Vague</span>
+                <span class="a-desc">J'en entends parler aux infos</span>
+              </div>
+              <div class="chip awareness-chip" data-val="conscient">
+                <span class="a-label">Conscient</span>
+                <span class="a-desc">Je sais que des donnees circulent</span>
+              </div>
+              <div class="chip awareness-chip" data-val="informe">
+                <span class="a-label">Bien informe</span>
+                <span class="a-desc">Je connais les risques precis</span>
+              </div>
+            </div>
+            <div class="q-error" id="err-awareness">Selectionnez une option</div>
+          </div>
+
+          <div class="question" id="q-worry">
+            <div class="q-label">Derniere fois que vos donnees en ligne vous ont preoccupe ? <span class="req">*</span></div>
+            <div class="chips" id="chips-worry">
+              <div class="chip" data-val="jamais">Jamais</div>
+              <div class="chip" data-val="longtemps">Plus d'un an</div>
+              <div class="chip" data-val="mois">Ces derniers mois</div>
+              <div class="chip" data-val="semaine">Cette semaine</div>
+            </div>
+            <div class="q-error" id="err-worry">Selectionnez une option</div>
+          </div>
+
+          <div class="question" id="q-triggers">
+            <div class="q-label">Qu'est-ce qui a declenche cette preoccupation ? <span class="req">*</span></div>
+            <div class="q-hint">Plusieurs choix possibles</div>
+            <div class="chips grid-1" id="chips-triggers">
+              <div class="chip" data-val="fuite_actu">Une fuite de donnees dans l'actualite</div>
+              <div class="chip" data-val="email_suspect">Un email / SMS suspect recu</div>
+              <div class="chip" data-val="google_nom">J'ai google mon nom et trouve des trucs</div>
+              <div class="chip" data-val="proche_victime">Un proche a ete victime (hack, usurpation...)</div>
+              <div class="chip" data-val="jamais">Ca ne m'a jamais preoccupe</div>
+              <div class="chip" data-val="autre">Autre</div>
+            </div>
+            <div class="q-error" id="err-triggers">Selectionnez au moins une option</div>
+          </div>
+        </div>
+
+        <!-- ═══════ STEP 3 ═══════ -->
+        <div class="step-content" id="step-3">
+          <div class="step-tag">Etape 3/4 — Votre vecu</div>
+
+          <div class="question" id="q-actions">
+            <div class="q-label">Comment verifiez-vous votre exposition en ligne aujourd'hui ? <span class="req">*</span></div>
+            <div class="q-hint">Plusieurs choix possibles</div>
+            <div class="chips grid-1" id="chips-actions">
+              <div class="chip" data-val="rien">Rien du tout</div>
+              <div class="chip" data-val="google">Je google mon nom de temps en temps</div>
+              <div class="chip" data-val="hibp">J'utilise Have I Been Pwned ou similaire</div>
+              <div class="chip" data-val="mdp">Je gere mes mots de passe (gestionnaire)</div>
+              <div class="chip" data-val="pro">J'ai fait appel a un service / outil pro</div>
+              <div class="chip" data-val="autre">Autre</div>
+            </div>
+            <div class="q-error" id="err-actions">Selectionnez au moins une option</div>
+          </div>
+
+          <div class="question" id="q-frustrations">
+            <div class="q-label">Qu'est-ce qui vous freine ou vous frustre le plus ? <span class="req">*</span></div>
+            <div class="q-hint">Plusieurs choix possibles</div>
+            <div class="chips grid-1" id="chips-frustrations">
+              <div class="chip" data-val="sais_pas">Je ne sais meme pas par ou commencer</div>
+              <div class="chip" data-val="trop_cher">Les outils serieux sont trop chers</div>
+              <div class="chip" data-val="trop_complexe">C'est trop technique / jargon</div>
+              <div class="chip" data-val="confiance">Je ne fais pas confiance aux resultats</div>
+              <div class="chip" data-val="partiel">Les resultats sont toujours partiels</div>
+              <div class="chip" data-val="aucune">Pas de frustration, je ne cherche pas</div>
+            </div>
+            <div class="q-error" id="err-frustrations">Selectionnez au moins une option</div>
+          </div>
+        </div>
+
+        <!-- ═══════ STEP 4 ═══════ -->
+        <div class="step-content" id="step-4">
+          <div class="step-tag">Etape 4/4 — Notre idee</div>
+
+          <div class="pitch-box">
+            <div class="pitch-tag">L'IDEE SCOPALY</div>
+            <p class="pitch-text">
+              Vous entrez votre email ou votre nom → en <strong>60 secondes</strong>, vous obtenez un score d'exposition avec la liste de tout ce qui circule sur vous (fuites, data brokers, reseaux sociaux...). <strong>Chaque resultat est explique simplement</strong> avec des actions concretes pour vous proteger.
+            </p>
+          </div>
+
+          <div class="question" id="q-reaction">
+            <div class="q-label">Votre reaction honnete ? <span class="req">*</span></div>
+            <div class="chips grid-1" id="chips-reaction">
+              <div class="chip reaction-chip r-indifferent" data-val="indifferent">Bof, pas convaincu</div>
+              <div class="chip reaction-chip r-curieux" data-val="curieux">Curieux, je testerais</div>
+              <div class="chip reaction-chip r-interesse" data-val="tres_interesse">Tres interesse, j'en ai besoin</div>
+              <div class="chip reaction-chip r-mefiant" data-val="mefiant">Mefiant — encore un outil qui fait peur pour vendre</div>
+            </div>
+            <div class="q-error" id="err-reaction">Selectionnez une option</div>
+          </div>
+
+          <div class="question">
+            <div class="q-label">Qu'est-ce qui serait le plus important pour vous ?</div>
+            <div class="q-hint">Optionnel — repondez librement</div>
+            <textarea
+              class="form-textarea"
+              id="input-feature"
+              rows="3"
+              placeholder="Ex: voir mes mots de passe fuites, savoir qui peut me trouver, avoir des conseils..."></textarea>
+          </div>
+
+          <div class="question" id="q-email">
+            <div class="q-label">Votre email <span class="req">*</span></div>
+            <div class="q-hint">Pour recevoir votre acces early access quand l'outil sera pret</div>
+            <input
+              type="email"
+              class="form-input"
+              id="input-email"
+              placeholder="vous@exemple.com"
+              autocomplete="email" />
+            <div class="q-error" id="err-email">Email invalide ou manquant</div>
+          </div>
+
+          <div class="question" id="q-rgpd">
+            <div class="rgpd-row" id="rgpd-row" onclick="toggleRgpd()">
+              <div class="rgpd-box" id="rgpd-box"></div>
+              <p class="rgpd-text">
+                J'accepte que mes reponses anonymisees soient utilisees pour ameliorer Scopaly.
+                Mon email sera utilise uniquement pour l'acces early access. <span class="req">*</span>
+              </p>
+            </div>
+            <div class="q-error" id="err-rgpd">Vous devez accepter pour continuer</div>
+          </div>
+        </div>
+
+        <!-- ═══════ SUCCESS ═══════ -->
+        <div class="success-screen" id="success-screen">
+          <div class="success-icon">🎉</div>
+          <h2 class="success-title">Merci enormement !</h2>
+          <p class="success-sub">
+            Vos reponses nous aident a construire un outil qui repond a un <strong style="color:var(--color-text-primary)">vrai besoin</strong> — pas juste une idee en l'air.
+          </p>
+          <div class="position-badge">
+            <div class="position-label">Votre position early access</div>
+            <div>
+              <span class="position-number" id="position-number">#42</span>
+              <span class="position-total">/ 500</span>
+            </div>
+          </div>
+          <p class="success-disclaimer">
+            On vous tient au courant par email des que le scan sera accessible.
+          </p>
+          <a href="landing.html" class="back-link">
+            ← Retour a l'accueil
+          </a>
+        </div>
+
+        <!-- Nav buttons -->
+        <div class="form-nav" id="form-nav">
+          <button class="btn-back" id="btn-back" style="display:none" onclick="goBack()">←</button>
+          <button class="btn-next" id="btn-next" onclick="goNext()">
+            Continuer <span>→</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="form-footer">
+        🔒 Anonyme · Donnees en France · RGPD
+      </div>
+    </div>
+
+    <script>
+      // ═══════════════════════════════════════════════
+      // STATE
+      // ═══════════════════════════════════════════════
+      const TOTAL_STEPS = 4;
+      let currentStep = 1;
+      let rgpdChecked = false;
+
+      const form = {
+        profile: '',
+        age_range: '',
+        awareness: '',
+        last_worry: '',
+        triggers: [],
+        current_actions: [],
+        frustrations: [],
+        reaction: '',
+        important_feature: '',
+        email: '',
+        rgpd: false,
+      };
+
+      const STEPS_META = [
+        { label: 'Vous', icon: '👤' },
+        { label: 'Conscience', icon: '🧠' },
+        { label: 'Vecu', icon: '⚡' },
+        { label: 'Solution', icon: '🔍' },
+      ];
+
+      // ═══════════════════════════════════════════════
+      // INIT PROGRESS BAR
+      // ═══════════════════════════════════════════════
+      function renderProgress() {
+        const container = document.getElementById('progress-steps');
+        container.innerHTML = '';
+
+        STEPS_META.forEach((s, i) => {
+          const stepNum = i + 1;
+          const div = document.createElement('div');
+          div.className = 'progress-step';
+
+          let bubbleClass = stepNum < currentStep ? 'done' : stepNum === currentStep ? 'active' : 'pending';
+          let bubbleContent = stepNum < currentStep ? '✓' : s.icon;
+
+          div.innerHTML = `<div class="step-bubble ${bubbleClass}">${bubbleContent}</div>`;
+
+          if (i < TOTAL_STEPS - 1) {
+            const fill = stepNum < currentStep ? '100%' : '0%';
+            div.innerHTML += `<div class="step-connector"><div class="step-connector-fill" style="width:${fill}"></div></div>`;
+          }
+
+          container.appendChild(div);
+        });
+
+        document.getElementById('step-label-current').textContent = currentStep;
+        document.getElementById('step-label-name').textContent = '— ' + STEPS_META[currentStep - 1].label;
+      }
+
+      // ═══════════════════════════════════════════════
+      // CHIP SELECTION
+      // ═══════════════════════════════════════════════
+      function initChips() {
+        // Single-select chips
+        [
+          ['chips-profile', 'profile', false],
+          ['chips-awareness', 'awareness', false],
+          ['chips-worry', 'last_worry', false],
+          ['chips-reaction', 'reaction', false],
+        ].forEach(([containerId, key, multi]) => {
+          const container = document.getElementById(containerId);
+          if (!container) return;
+          container.querySelectorAll('.chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+              container.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
+              chip.classList.add('selected');
+              form[key] = chip.dataset.val;
+              clearError('err-' + (key === 'last_worry' ? 'worry' : key === 'age_range' ? 'age' : key));
+            });
+          });
+        });
+
+        // Age — single
+        const ageContainer = document.getElementById('chips-age');
+        ageContainer.querySelectorAll('.chip').forEach(chip => {
+          chip.addEventListener('click', () => {
+            ageContainer.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
+            chip.classList.add('selected');
+            form.age_range = chip.dataset.val;
+            clearError('err-age');
+          });
+        });
+
+        // Multi-select chips
+        [
+          ['chips-triggers', 'triggers', 'err-triggers'],
+          ['chips-actions', 'current_actions', 'err-actions'],
+          ['chips-frustrations', 'frustrations', 'err-frustrations'],
+        ].forEach(([containerId, key, errId]) => {
+          const container = document.getElementById(containerId);
+          if (!container) return;
+          container.querySelectorAll('.chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+              chip.classList.toggle('selected');
+              const val = chip.dataset.val;
+              if (form[key].includes(val)) {
+                form[key] = form[key].filter(v => v !== val);
+              } else {
+                form[key].push(val);
+              }
+              if (form[key].length > 0) clearError(errId);
+            });
+          });
+        });
+      }
+
+      // ═══════════════════════════════════════════════
+      // RGPD
+      // ═══════════════════════════════════════════════
+      function toggleRgpd() {
+        rgpdChecked = !rgpdChecked;
+        form.rgpd = rgpdChecked;
+        const box = document.getElementById('rgpd-box');
+        box.classList.toggle('checked', rgpdChecked);
+        box.classList.remove('error-field');
+        box.innerHTML = rgpdChecked
+          ? `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg>`
+          : '';
+        clearError('err-rgpd');
+      }
+      window.toggleRgpd = toggleRgpd;
+
+      // ═══════════════════════════════════════════════
+      // VALIDATION
+      // ═══════════════════════════════════════════════
+      function showError(id) {
+        const el = document.getElementById(id);
+        if (el) el.classList.add('show');
+      }
+      function clearError(id) {
+        const el = document.getElementById(id);
+        if (el) el.classList.remove('show');
+      }
+
+      function validate() {
+        let ok = true;
+
+        if (currentStep === 1) {
+          if (!form.profile)    { showError('err-profile'); ok = false; }
+          if (!form.age_range)  { showError('err-age');     ok = false; }
+        }
+        if (currentStep === 2) {
+          if (!form.awareness)          { showError('err-awareness'); ok = false; }
+          if (!form.last_worry)         { showError('err-worry');     ok = false; }
+          if (form.triggers.length === 0) { showError('err-triggers'); ok = false; }
+        }
+        if (currentStep === 3) {
+          if (form.current_actions.length === 0) { showError('err-actions');      ok = false; }
+          if (form.frustrations.length === 0)    { showError('err-frustrations'); ok = false; }
+        }
+        if (currentStep === 4) {
+          if (!form.reaction) { showError('err-reaction'); ok = false; }
+          const email = document.getElementById('input-email').value.trim();
+          if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            showError('err-email');
+            document.getElementById('input-email').classList.add('has-error');
+            ok = false;
+          }
+          if (!form.rgpd) {
+            showError('err-rgpd');
+            document.getElementById('rgpd-box').classList.add('error-field');
+            ok = false;
+          }
+        }
+        return ok;
+      }
+
+      // ═══════════════════════════════════════════════
+      // NAVIGATION
+      // ═══════════════════════════════════════════════
+      function showStep(n) {
+        document.querySelectorAll('.step-content').forEach(el => el.classList.remove('active'));
+        const target = document.getElementById('step-' + n);
+        if (target) {
+          target.classList.add('active');
+          target.style.animation = 'none';
+          requestAnimationFrame(() => {
+            target.style.animation = '';
+          });
+        }
+        document.getElementById('btn-back').style.display = n > 1 ? 'block' : 'none';
+        const btnNext = document.getElementById('btn-next');
+        if (n < TOTAL_STEPS) {
+          btnNext.innerHTML = 'Continuer <span>→</span>';
+          btnNext.className = 'btn-next';
+          btnNext.onclick = goNext;
+        } else {
+          btnNext.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg> Envoyer & rejoindre l'early access`;
+          btnNext.className = 'btn-submit';
+          btnNext.onclick = submitForm;
+        }
+        renderProgress();
+        // Scroll to top of card
+        document.getElementById('form-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+
+      function goNext() {
+        if (!validate()) return;
+        if (currentStep < TOTAL_STEPS) {
+          currentStep++;
+          showStep(currentStep);
+        }
+      }
+      window.goNext = goNext;
+
+      function goBack() {
+        if (currentStep > 1) {
+          currentStep--;
+          showStep(currentStep);
+        }
+      }
+      window.goBack = goBack;
+
+      // ═══════════════════════════════════════════════
+      // SUBMIT
+      // ═══════════════════════════════════════════════
+      async function submitForm() {
+        if (!validate()) return;
+
+        form.email = document.getElementById('input-email').value.trim();
+        form.important_feature = document.getElementById('input-feature').value.trim();
+
+        const payload = {
+          ...form,
+          triggers: form.triggers.join(', '),
+          current_actions: form.current_actions.join(', '),
+          frustrations: form.frustrations.join(', '),
+          timestamp: new Date().toISOString(),
+          utm: new URLSearchParams(window.location.search).get('utm_source') || 'direct',
+        };
+
+        try {
+          await fetch('GOOGLE_SHEETS_WEBHOOK_URL', {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+          });
+        } catch (e) {
+          console.log('Webhook non configure. Data:', payload);
+        }
+
+        showSuccess();
+      }
+      window.submitForm = submitForm;
+
+      function showSuccess() {
+        // Hide all steps and nav
+        document.querySelectorAll('.step-content').forEach(el => el.classList.remove('active'));
+        document.getElementById('form-nav').style.display = 'none';
+        document.getElementById('progress-wrap') && (document.getElementById('progress-wrap').style.display = 'none');
+        document.querySelector('.form-header').style.display = 'none';
+
+        const success = document.getElementById('success-screen');
+        success.classList.add('show');
+
+        // Random position
+        const pos = Math.floor(Math.random() * 60) + 12;
+        document.getElementById('position-number').textContent = '#' + pos;
+
+        // Confetti
+        launchConfetti();
+      }
+
+      // ═══════════════════════════════════════════════
+      // CONFETTI
+      // ═══════════════════════════════════════════════
+      function launchConfetti() {
+        const container = document.getElementById('confetti');
+        const colors = ['#c084fc', '#ff8c61', '#f2cc8f', '#00e68a', '#60a5fa', '#fbbf24'];
+        for (let i = 0; i < 60; i++) {
+          const piece = document.createElement('div');
+          piece.className = 'confetti-piece';
+          piece.style.cssText = `
+            left: ${Math.random() * 100}%;
+            top: ${-10 - Math.random() * 20}px;
+            background: ${colors[Math.floor(Math.random() * colors.length)]};
+            width: ${4 + Math.random() * 8}px;
+            height: ${4 + Math.random() * 8}px;
+            border-radius: ${Math.random() > 0.5 ? '50%' : '2px'};
+            animation-delay: ${Math.random() * 0.8}s;
+            animation-duration: ${1 + Math.random() * 1.5}s;
+          `;
+          container.appendChild(piece);
+        }
+        setTimeout(() => { container.innerHTML = ''; }, 3000);
+      }
+
+      // ═══════════════════════════════════════════════
+      // EMAIL INPUT — live validation
+      // ═══════════════════════════════════════════════
+      document.getElementById('input-email').addEventListener('input', function() {
+        this.classList.remove('has-error');
+        clearError('err-email');
+      });
+
+      // ═══════════════════════════════════════════════
+      // BOOT
+      // ═══════════════════════════════════════════════
+      initChips();
+      renderProgress();
+      showStep(1);
+    </script>
+  </body>
+</html>

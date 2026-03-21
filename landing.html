@@ -1,0 +1,1122 @@
+<!doctype html>
+<html lang="fr" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Scopaly — Que sait Internet sur vous ?</title>
+    <meta name="description" content="Bientot : decouvrez en 60 secondes ce qui circule sur vous en ligne. Fuites de donnees, profils exposes, data brokers. Rejoignez la liste d'attente." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="color.css" />
+
+    <style>
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+      html { scroll-behavior: smooth; }
+
+      body {
+        font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+        background: var(--color-bg);
+        color: var(--color-text-primary);
+        overflow-x: hidden;
+      }
+
+      /* ── Scrollbar ── */
+      ::-webkit-scrollbar { width: 5px; }
+      ::-webkit-scrollbar-track { background: var(--color-bg); }
+      ::-webkit-scrollbar-thumb { background: var(--color-border-primary); border-radius: 9999px; }
+      ::-webkit-scrollbar-thumb:hover { background: var(--color-primary); }
+
+      /* ── Noise texture ── */
+      body::before {
+        content: '';
+        position: fixed; inset: 0;
+        background: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
+        pointer-events: none; z-index: 0;
+      }
+
+      /* ── Particle canvas ── */
+      #particle-canvas {
+        position: fixed; inset: 0;
+        pointer-events: none; z-index: 0;
+        opacity: 0.7;
+      }
+
+      /* ── Grid background ── */
+      .grid-bg {
+        background-image:
+          linear-gradient(rgba(192,132,252,0.03) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(192,132,252,0.03) 1px, transparent 1px);
+        background-size: 64px 64px;
+      }
+
+      /* ── Keyframes ── */
+      @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(28px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+      @keyframes fadeIn  { from { opacity: 0; } to { opacity: 1; } }
+      @keyframes blink   { 0%,100%{opacity:1} 50%{opacity:0} }
+      @keyframes fillBar { from{width:0%} to{width:var(--fill)} }
+      @keyframes float   { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+      @keyframes scanPulse {
+        0%,100%{opacity:0.3;transform:scaleX(0.9)}
+        50%{opacity:1;transform:scaleX(1)}
+      }
+      @keyframes shimmer {
+        0%  {background-position:-200% center}
+        100%{background-position: 200% center}
+      }
+      @keyframes pulseIcon {
+        0%,100%{transform:scale(1)}
+        50%{transform:scale(1.12)}
+      }
+      @keyframes rotateRing {
+        from{transform:rotate(0deg)} to{transform:rotate(360deg)}
+      }
+      @keyframes typewriter {
+        from{width:0} to{width:100%}
+      }
+      @keyframes cursorBlink {
+        0%,100%{border-right-color:var(--color-primary)}
+        50%{border-right-color:transparent}
+      }
+      @keyframes lineGrow {
+        from{transform:scaleX(0)} to{transform:scaleX(1)}
+      }
+      @keyframes glow-pulse {
+        0%,100%{opacity:0.4;transform:scale(1)}
+        50%{opacity:0.8;transform:scale(1.05)}
+      }
+      @keyframes badge-pop {
+        0%{transform:translateY(-4px);opacity:0}
+        100%{transform:translateY(0);opacity:1}
+      }
+      @keyframes morphBlob {
+        0%,100%{border-radius:60% 40% 30% 70% / 60% 30% 70% 40%}
+        33%{border-radius:30% 60% 70% 40% / 50% 60% 30% 60%}
+        66%{border-radius:20% 60% 60% 40% / 30% 60% 70% 40%}
+      }
+      @keyframes dataStream {
+        0%{transform:translateY(-100%);opacity:0}
+        10%{opacity:1}
+        90%{opacity:1}
+        100%{transform:translateY(100vh);opacity:0}
+      }
+      @keyframes floatDot {
+        0%,100%{transform:translate(0,0);opacity:0.4}
+        25%{transform:translate(8px,-12px);opacity:0.8}
+        50%{transform:translate(-6px,-20px);opacity:0.6}
+        75%{transform:translate(10px,-10px);opacity:0.9}
+      }
+      @keyframes scanBeam {
+        0%{top:0%;opacity:0.6}
+        100%{top:100%;opacity:0}
+      }
+      @keyframes hexPulse {
+        0%,100%{opacity:0.05;transform:scale(1)}
+        50%{opacity:0.15;transform:scale(1.05)}
+      }
+
+      .anim-fade-up { animation: fadeUp 0.7s ease-out forwards; opacity: 0; }
+      .anim-d1 { animation-delay: 0.1s; }
+      .anim-d2 { animation-delay: 0.25s; }
+      .anim-d3 { animation-delay: 0.4s; }
+      .anim-d4 { animation-delay: 0.55s; }
+      .anim-d5 { animation-delay: 0.7s; }
+
+      .float-anim { animation: float 5s ease-in-out infinite; }
+
+      /* ── Text gradients ── */
+      .text-gradient-primary {
+        background: linear-gradient(135deg, #c084fc 0%, #ff8c61 60%, #f2cc8f 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .text-gradient-shimmer {
+        background: linear-gradient(90deg, #c084fc 0%, #f2cc8f 30%, #ff8c61 60%, #c084fc 100%);
+        background-size: 200% auto;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        animation: shimmer 4s linear infinite;
+      }
+
+      /* ── Glow effects ── */
+      .glow-primary { box-shadow: 0 0 40px rgba(192,132,252,0.2), 0 0 80px rgba(192,132,252,0.06); }
+
+      /* ── NAV ── */
+      .nav {
+        position: fixed; top: 0; width: 100%; z-index: 100;
+        background: rgba(2,5,23,0.75);
+        backdrop-filter: blur(16px);
+        border-bottom: 1px solid rgba(46,21,69,0.6);
+        transition: background 0.25s ease;
+      }
+      .nav-inner {
+        max-width: 1100px; margin: 0 auto;
+        padding: 0 24px; height: 56px;
+        display: flex; align-items: center; justify-content: space-between;
+      }
+      .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+      .nav-logo-icon {
+        width: 30px; height: 30px; border-radius: 8px;
+        background: linear-gradient(135deg, #c084fc, #ff8c61);
+        display: flex; align-items: center; justify-content: center;
+        box-shadow: 0 0 16px rgba(192,132,252,0.4);
+      }
+      .nav-logo-name { font-size: 18px; font-weight: 800; color: var(--color-text-primary); letter-spacing: -0.02em; }
+      .nav-badge {
+        font-size: 9px; font-family: 'JetBrains Mono', monospace;
+        background: rgba(255,140,97,0.12); color: var(--color-secondary);
+        border: 1px solid rgba(255,140,97,0.25);
+        padding: 2px 7px; border-radius: 9999px; letter-spacing: 0.05em;
+      }
+      .nav-cta {
+        display: inline-flex; align-items: center; gap: 6px;
+        background: linear-gradient(135deg, #c084fc, #a855f7);
+        color: #fff; font-size: 13px; font-weight: 700;
+        padding: 8px 18px; border-radius: 9999px;
+        text-decoration: none; transition: all 0.25s;
+        box-shadow: 0 0 20px rgba(192,132,252,0.25);
+      }
+      .nav-cta:hover { transform: translateY(-1px); box-shadow: 0 0 32px rgba(192,132,252,0.4); }
+
+      /* ── TICKER ── */
+      .ticker-wrap {
+        overflow: hidden;
+        border-top: 1px solid rgba(229,107,111,0.12);
+        border-bottom: 1px solid rgba(229,107,111,0.12);
+        background: rgba(229,107,111,0.04);
+        padding: 12px 0; margin-top: 56px;
+      }
+      @keyframes ticker { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+      .ticker-inner {
+        display: flex; gap: 64px; width: max-content;
+        animation: ticker 32s linear infinite;
+        font-size: 11px; font-family: 'JetBrains Mono', monospace;
+        color: var(--color-danger); letter-spacing: 0.04em;
+      }
+      .ticker-item { white-space: nowrap; display: flex; align-items: center; gap: 8px; }
+      .ticker-item::before { content: '⚠'; }
+
+      /* ── HERO ── */
+      .hero {
+        position: relative; min-height: calc(100vh - 80px);
+        display: grid; place-items: center;
+        padding: 80px 24px 72px;
+      }
+      .hero-inner {
+        max-width: 1100px; width: 100%;
+        display: grid; grid-template-columns: 1fr 1fr;
+        gap: 64px; align-items: center;
+        position: relative; z-index: 1;
+      }
+      .hero-eyebrow {
+        display: inline-flex; align-items: center; gap: 8px;
+        background: rgba(229,107,111,0.1);
+        border: 1px solid rgba(229,107,111,0.2);
+        border-radius: 9999px; padding: 5px 14px; margin-bottom: 24px;
+      }
+      .hero-eyebrow-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--color-danger); animation: blink 1.5s ease-in-out infinite; }
+      .hero-eyebrow-text { font-size: 11px; font-family: 'JetBrains Mono', monospace; color: var(--color-danger); letter-spacing: 0.04em; }
+      .hero-h1 {
+        font-size: clamp(2.2rem, 4.5vw, 3.6rem);
+        font-weight: 900; line-height: 1.08;
+        letter-spacing: -0.03em; color: var(--color-text-primary); margin-bottom: 20px;
+      }
+      .hero-h1 .accent { position: relative; display: inline-block; }
+      .hero-h1 .accent::after {
+        content: ''; position: absolute; left: 0; bottom: -2px;
+        width: 100%; height: 3px;
+        background: linear-gradient(90deg, #c084fc, #ff8c61);
+        border-radius: 2px; animation: scanPulse 2.4s ease-in-out infinite;
+      }
+      .hero-sub { font-size: 18px; color: var(--color-text-secondary); line-height: 1.65; margin-bottom: 12px; max-width: 480px; }
+      .hero-sub strong { color: var(--color-text-primary); font-weight: 700; }
+      .hero-meta {
+        font-size: 12px; color: var(--color-text-tertiary);
+        font-family: 'JetBrains Mono', monospace;
+        margin-bottom: 36px; display: flex; gap: 16px; flex-wrap: wrap;
+      }
+      .hero-meta span::before { content: '// '; }
+
+      /* Waitlist badge */
+      .waitlist-badge {
+        display: inline-flex; align-items: center; gap: 8px;
+        background: rgba(192,132,252,0.08);
+        border: 1px solid rgba(192,132,252,0.2);
+        border-radius: 9999px; padding: 5px 14px; margin-bottom: 20px;
+        font-size: 11px; font-family: 'JetBrains Mono', monospace;
+        color: var(--color-primary); letter-spacing: 0.04em;
+        animation: badge-pop 0.5s 0.8s ease-out both;
+      }
+      .waitlist-badge .wl-dot {
+        width: 6px; height: 6px; border-radius: 50%;
+        background: var(--color-primary);
+        animation: blink 2s ease-in-out infinite;
+      }
+
+      .hero-cta-group { display: flex; gap: 12px; flex-wrap: wrap; }
+      .btn-primary {
+        display: inline-flex; align-items: center; gap: 8px;
+        background: linear-gradient(135deg, #c084fc 0%, #a855f7 100%);
+        color: #fff; font-size: 15px; font-weight: 700;
+        padding: 14px 28px; border-radius: var(--radius-lg);
+        text-decoration: none; border: none; cursor: pointer;
+        transition: all 0.25s; box-shadow: 0 4px 24px rgba(192,132,252,0.35);
+      }
+      .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 40px rgba(192,132,252,0.5); }
+      .btn-secondary {
+        display: inline-flex; align-items: center; gap: 6px;
+        color: var(--color-text-secondary); font-size: 14px; font-weight: 600;
+        padding: 14px 20px; border-radius: var(--radius-lg);
+        text-decoration: none; border: 1px solid var(--color-border-primary);
+        background: transparent; transition: all 0.25s; cursor: pointer;
+      }
+      .btn-secondary:hover { color: var(--color-text-primary); border-color: var(--color-border-secondary); background: rgba(46,21,69,0.4); }
+
+      /* ── HERO VISUAL ── */
+      .hero-visual { position: relative; }
+      .hero-card {
+        background: var(--color-bg-surface);
+        border: 1px solid var(--color-border-primary);
+        border-radius: 20px; padding: 24px; position: relative; overflow: hidden;
+      }
+      .hero-card::before {
+        content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(192,132,252,0.4), transparent);
+      }
+      /* Animated scan ring on hero card */
+      .card-scan-ring {
+        position: absolute; top: -60px; right: -60px;
+        width: 200px; height: 200px; border-radius: 50%;
+        border: 1px solid rgba(192,132,252,0.1);
+        animation: rotateRing 12s linear infinite;
+        pointer-events: none;
+      }
+      .card-scan-ring::before {
+        content: ''; position: absolute; top: 10px; left: 10px; right: 10px; bottom: 10px;
+        border-radius: 50%; border: 1px dashed rgba(255,140,97,0.08);
+      }
+      .card-scan-ring::after {
+        content: ''; position: absolute; top: -3px; left: calc(50% - 3px);
+        width: 6px; height: 6px; border-radius: 50%;
+        background: var(--color-primary);
+        box-shadow: 0 0 8px rgba(192,132,252,0.8);
+      }
+      .card-topbar { display: flex; align-items: center; gap: 8px; margin-bottom: 20px; }
+      .card-dot { width: 10px; height: 10px; border-radius: 50%; }
+      .card-url { margin-left: 8px; font-size: 10px; font-family: 'JetBrains Mono', monospace; color: var(--color-text-tertiary); }
+      .score-label { display: flex; justify-content: space-between; margin-bottom: 8px; }
+      .score-label span { font-size: 10px; font-family: 'JetBrains Mono', monospace; color: var(--color-text-tertiary); }
+      .score-label .score-val { color: var(--color-danger); font-weight: 700; }
+      .score-track { height: 10px; background: var(--color-bg-surface-alt); border-radius: 9999px; overflow: hidden; margin-bottom: 6px; }
+      .score-fill { height: 100%; border-radius: 9999px; background: linear-gradient(90deg, #c084fc 0%, #ff8c61 55%, #e56b6f 100%); animation: fillBar 2s 0.5s ease-out forwards; width: 0%; }
+      .score-range { display: flex; justify-content: space-between; font-size: 9px; font-family: 'JetBrains Mono', monospace; color: var(--color-text-tertiary); margin-bottom: 20px; }
+      .result-item { display: flex; align-items: flex-start; gap: 12px; padding: 12px 14px; border-radius: 12px; border: 1px solid; margin-bottom: 8px; }
+      .result-item.danger { background: rgba(229,107,111,0.07); border-color: rgba(229,107,111,0.15); }
+      .result-item.warn   { background: rgba(251,191,36,0.06);  border-color: rgba(251,191,36,0.15);  }
+      .result-item.ok     { background: rgba(0,230,138,0.06);   border-color: rgba(0,230,138,0.15);   }
+      .result-icon { font-size: 14px; margin-top: 1px; flex-shrink: 0; }
+      .result-title { font-size: 12px; font-weight: 700; color: var(--color-text-primary); margin-bottom: 2px; }
+      .result-desc  { font-size: 10px; color: var(--color-text-tertiary); }
+      .card-footer  { margin-top: 14px; text-align: center; font-size: 9px; font-family: 'JetBrains Mono', monospace; color: var(--color-text-tertiary); }
+
+      /* ── TRUST BAR ── */
+      .trust-bar {
+        border-top: 1px solid rgba(46,21,69,0.5); border-bottom: 1px solid rgba(46,21,69,0.5);
+        background: rgba(10,14,36,0.6); padding: 14px 24px; position: relative; z-index: 1;
+      }
+      .trust-bar-inner {
+        max-width: 900px; margin: 0 auto;
+        display: flex; flex-wrap: wrap; justify-content: center;
+        gap: 8px 32px; font-size: 12px; font-family: 'JetBrains Mono', monospace;
+        color: var(--color-text-tertiary);
+      }
+      .trust-item { display: flex; align-items: center; gap: 7px; }
+      .trust-item .t-val { color: var(--color-primary); font-weight: 700; }
+
+      /* ── SECTIONS ── */
+      .section { padding: 96px 24px; position: relative; z-index: 1; }
+      .section-inner { max-width: 1100px; margin: 0 auto; }
+      .section-tag { font-size: 11px; font-family: 'JetBrains Mono', monospace; color: var(--color-primary); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 12px; display: block; }
+      .section-h2 { font-size: clamp(1.8rem, 3.5vw, 2.6rem); font-weight: 800; letter-spacing: -0.02em; color: var(--color-text-primary); line-height: 1.15; margin-bottom: 16px; }
+      .section-sub { font-size: 17px; color: var(--color-text-secondary); line-height: 1.6; max-width: 560px; }
+
+      /* ── Blobs décoratifs ── */
+      .blob {
+        position: absolute; border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+        filter: blur(60px); pointer-events: none;
+        animation: morphBlob 10s ease-in-out infinite;
+      }
+
+      /* ── Data stream (zones vides steps) ── */
+      .data-streams {
+        position: absolute; inset: 0; overflow: hidden; pointer-events: none;
+      }
+      .data-stream {
+        position: absolute; width: 1px;
+        background: linear-gradient(180deg, transparent, rgba(192,132,252,0.5), transparent);
+        animation: dataStream linear infinite;
+      }
+
+      /* ── Floating dots ── */
+      .float-dots { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+      .fdot {
+        position: absolute; border-radius: 50%;
+        animation: floatDot ease-in-out infinite;
+      }
+
+      /* ── Scan beam on hero card ── */
+      .scan-beam {
+        position: absolute; left: 0; right: 0; height: 2px;
+        background: linear-gradient(90deg, transparent, rgba(192,132,252,0.6), transparent);
+        animation: scanBeam 3s linear infinite;
+        pointer-events: none;
+      }
+
+      /* ── Hex grid decoration ── */
+      .hex-grid {
+        position: absolute; inset: 0; pointer-events: none; overflow: hidden;
+      }
+      .hex-grid svg { width: 100%; height: 100%; }
+
+      /* ── FINDINGS ── */
+      .findings-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; margin-top: 56px; }
+      .finding-card {
+        background: var(--color-bg-surface);
+        border: 1px solid var(--color-border-primary);
+        border-radius: var(--radius-xl); padding: 24px;
+        transition: all 0.3s; position: relative; overflow: hidden;
+      }
+      .finding-card:hover { border-color: var(--color-border-secondary); transform: translateY(-4px); box-shadow: 0 16px 48px rgba(0,0,0,0.4); }
+      .finding-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: var(--card-gradient, linear-gradient(90deg,#c084fc,#ff8c61)); opacity: 0; transition: opacity 0.3s; }
+      .finding-card:hover::before { opacity: 1; }
+      .finding-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; margin-bottom: 16px; }
+      .finding-card:hover .finding-icon { animation: pulseIcon 0.6s ease-in-out; }
+      .finding-title { font-size: 15px; font-weight: 700; color: var(--color-text-primary); margin-bottom: 6px; }
+      .finding-desc  { font-size: 13px; color: var(--color-text-secondary); line-height: 1.6; }
+
+      /* ── HOW IT WORKS ── */
+      .steps-bg { background: var(--color-bg-surface-alt); }
+      .steps-grid {
+        display: grid; grid-template-columns: repeat(3, 1fr);
+        gap: 0; margin-top: 64px; position: relative;
+      }
+      /* Animated connector line */
+      .steps-line {
+        position: absolute; top: 28px;
+        left: calc(100%/6); right: calc(100%/6);
+        height: 1px; overflow: hidden;
+      }
+      .steps-line-fill {
+        height: 100%; width: 0%;
+        background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+        transition: width 1.2s ease;
+      }
+      .steps-line-fill.animate { width: 100%; }
+      .step-item { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 0 24px; }
+      .step-number {
+        width: 56px; height: 56px; border-radius: 50%;
+        background: var(--color-bg-elevated);
+        border: 2px solid var(--color-border-secondary);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 20px; font-weight: 900; font-family: 'JetBrains Mono', monospace;
+        color: var(--color-primary); margin-bottom: 20px; position: relative; z-index: 1;
+        transition: all 0.3s;
+      }
+      .step-item:hover .step-number {
+        border-color: var(--color-primary);
+        box-shadow: 0 0 20px rgba(192,132,252,0.3);
+        transform: scale(1.08);
+      }
+      .step-title { font-size: 16px; font-weight: 700; color: var(--color-text-primary); margin-bottom: 8px; }
+      .step-desc  { font-size: 13px; color: var(--color-text-secondary); line-height: 1.6; }
+
+      /* ── WAITLIST SECTION ── */
+      .waitlist-section {
+        padding: 96px 24px; position: relative; z-index: 1;
+        background: var(--color-bg);
+      }
+      .waitlist-inner { max-width: 1100px; margin: 0 auto; }
+      .waitlist-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; margin-top: 56px; }
+      .wl-reasons { display: flex; flex-direction: column; gap: 16px; }
+      .wl-reason {
+        display: flex; align-items: flex-start; gap: 14px;
+        padding: 16px 18px; border-radius: var(--radius-lg);
+        border: 1px solid var(--color-border-primary);
+        background: var(--color-bg-surface);
+        transition: all 0.25s;
+      }
+      .wl-reason:hover { border-color: var(--color-border-secondary); transform: translateX(4px); }
+      .wl-reason-icon { font-size: 22px; flex-shrink: 0; margin-top: 2px; }
+      .wl-reason-title { font-size: 14px; font-weight: 700; color: var(--color-text-primary); margin-bottom: 3px; }
+      .wl-reason-desc  { font-size: 12px; color: var(--color-text-secondary); line-height: 1.5; }
+      /* Countdown / spots left */
+      .spots-left {
+        background: var(--color-bg-surface);
+        border: 1px solid var(--color-border-secondary);
+        border-radius: var(--radius-xl); padding: 32px;
+        position: relative; overflow: hidden; text-align: center;
+      }
+      .spots-left::before {
+        content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+        background: linear-gradient(90deg, #c084fc, #ff8c61, #f2cc8f);
+      }
+      .spots-glow {
+        position: absolute; top: 50%; left: 50%;
+        transform: translate(-50%,-50%);
+        width: 300px; height: 150px;
+        background: radial-gradient(ellipse, rgba(192,132,252,0.08) 0%, transparent 70%);
+        pointer-events: none;
+        animation: glow-pulse 3s ease-in-out infinite;
+      }
+      .spots-number {
+        font-size: 64px; font-weight: 900; font-family: 'JetBrains Mono', monospace;
+        line-height: 1; margin-bottom: 4px;
+        background: linear-gradient(135deg, #c084fc, #ff8c61);
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        position: relative; z-index: 1;
+      }
+      .spots-label { font-size: 13px; color: var(--color-text-secondary); margin-bottom: 20px; position: relative; z-index: 1; }
+      .spots-bar-wrap { height: 8px; background: var(--color-bg-surface-alt); border-radius: 9999px; overflow: hidden; margin-bottom: 24px; position: relative; z-index: 1; }
+      .spots-bar-fill { height: 100%; border-radius: 9999px; background: linear-gradient(90deg, #c084fc, #ff8c61); width: 51%; transition: width 1s ease; }
+      .spots-bar-label { font-size: 11px; font-family: 'JetBrains Mono', monospace; color: var(--color-text-tertiary); margin-bottom: 24px; position: relative; z-index: 1; }
+      .spots-cta-note { font-size: 11px; color: var(--color-text-tertiary); font-family: 'JetBrains Mono', monospace; margin-top: 12px; }
+
+      /* ── FAQ ── */
+      .faq-list { margin-top: 48px; display: flex; flex-direction: column; gap: 4px; }
+      .faq-item { border: 1px solid var(--color-border-primary); border-radius: var(--radius-lg); overflow: hidden; transition: border-color 0.2s; }
+      .faq-item:hover { border-color: var(--color-border-secondary); }
+      .faq-q {
+        width: 100%; background: none; border: none; cursor: pointer;
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 18px 22px; font-size: 15px; font-weight: 600;
+        color: var(--color-text-primary); font-family: inherit; text-align: left;
+        transition: background 0.2s;
+      }
+      .faq-q:hover { background: rgba(192,132,252,0.04); }
+      .faq-q.open  { background: rgba(192,132,252,0.06); }
+      .faq-chevron { flex-shrink: 0; width: 20px; height: 20px; color: var(--color-text-tertiary); transition: transform 0.2s; }
+      .faq-q.open .faq-chevron { transform: rotate(180deg); }
+      .faq-a { font-size: 14px; color: var(--color-text-secondary); line-height: 1.7; padding: 0 22px; max-height: 0; overflow: hidden; transition: max-height 0.35s ease, padding 0.35s ease; }
+      .faq-a.open { max-height: 200px; padding: 0 22px 18px; }
+
+      /* ── CTA FINAL ── */
+      .cta-section {
+        padding: 96px 24px; text-align: center; position: relative; overflow: hidden; z-index: 1;
+        background: linear-gradient(180deg, var(--color-bg) 0%, var(--color-bg-surface-alt) 100%);
+      }
+      .cta-glow { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 600px; height: 300px; background: radial-gradient(ellipse, rgba(192,132,252,0.12) 0%, transparent 70%); pointer-events: none; }
+      .cta-h2 { font-size: clamp(2rem, 5vw, 3.2rem); font-weight: 900; letter-spacing: -0.03em; color: var(--color-text-primary); line-height: 1.1; margin-bottom: 20px; position: relative; z-index: 1; }
+      .cta-sub { font-size: 17px; color: var(--color-text-secondary); max-width: 520px; margin: 0 auto 40px; line-height: 1.6; position: relative; z-index: 1; }
+      .cta-disclaimer { font-size: 12px; color: var(--color-text-tertiary); margin-top: 16px; font-family: 'JetBrains Mono', monospace; }
+
+      /* ── FOOTER ── */
+      footer { border-top: 1px solid var(--color-border-primary); padding: 32px 24px; background: var(--color-bg); position: relative; z-index: 1; }
+      .footer-inner { max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+      .footer-copy { font-size: 12px; color: var(--color-text-tertiary); font-family: 'JetBrains Mono', monospace; }
+      .footer-links { display: flex; gap: 20px; }
+      .footer-links a { font-size: 12px; color: var(--color-text-tertiary); text-decoration: none; transition: color 0.2s; }
+      .footer-links a:hover { color: var(--color-primary); }
+
+      /* ── REVEAL ── */
+      .reveal { opacity: 0; transform: translateY(32px); transition: opacity 0.7s ease, transform 0.7s ease; }
+      .reveal.visible { opacity: 1; transform: translateY(0); }
+
+      /* ── RESPONSIVE ── */
+      @media (max-width: 768px) {
+        .hero-inner { grid-template-columns: 1fr; gap: 48px; }
+        .hero-visual { order: -1; }
+        .hero-h1 { font-size: 2rem; }
+        .steps-grid { grid-template-columns: 1fr; gap: 40px; }
+        .steps-line { display: none; }
+        .hero-card { max-width: 400px; margin: 0 auto; }
+        .footer-inner { flex-direction: column; align-items: flex-start; }
+        .waitlist-grid { grid-template-columns: 1fr; }
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Canvas particules -->
+    <canvas id="particle-canvas"></canvas>
+
+    <!-- ══════════════════════════════════════════════════ -->
+    <!-- NAV -->
+    <!-- ══════════════════════════════════════════════════ -->
+    <nav class="nav" id="nav">
+      <div class="nav-inner">
+        <a href="#" class="nav-logo">
+          <div class="nav-logo-icon">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          </div>
+          <span class="nav-logo-name">Scopaly</span>
+          <span class="nav-badge">BIENTOT</span>
+        </a>
+        <a href="form.html" class="nav-cta">
+          Rejoindre la liste
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>
+        </a>
+      </div>
+    </nav>
+
+    <!-- ══════════════════════════════════════════════════ -->
+    <!-- TICKER -->
+    <!-- ══════════════════════════════════════════════════ -->
+    <div class="ticker-wrap">
+      <div class="ticker-inner">
+        <span class="ticker-item">16 milliards de comptes ont fuite en 2025</span>
+        <span class="ticker-item">Votre email figure peut-etre dans 3 bases de donnees</span>
+        <span class="ticker-item">1 personne sur 2 ne sait pas que ses donnees ont fuite</span>
+        <span class="ticker-item">Facebook, LinkedIn, X — des millions de profils revendus en 2025</span>
+        <span class="ticker-item">Les data brokers revendent votre adresse et vos revenus</span>
+        <span class="ticker-item">Usurpation d'identite : +51% en France en 2025</span>
+        <span class="ticker-item">Scopaly arrive bientot — rejoignez la liste d'attente</span>
+        <span class="ticker-item">16 milliards de comptes ont fuite en 2025</span>
+        <span class="ticker-item">Votre email figure peut-etre dans 3 bases de donnees</span>
+        <span class="ticker-item">1 personne sur 2 ne sait pas que ses donnees ont fuite</span>
+        <span class="ticker-item">Facebook, LinkedIn, X — des millions de profils revendus en 2025</span>
+        <span class="ticker-item">Les data brokers revendent votre adresse et vos revenus</span>
+        <span class="ticker-item">Usurpation d'identite : +51% en France en 2025</span>
+        <span class="ticker-item">Scopaly arrive bientot — rejoignez la liste d'attente</span>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════ -->
+    <!-- HERO -->
+    <!-- ══════════════════════════════════════════════════ -->
+    <section class="hero grid-bg">
+      <div class="hero-inner">
+        <!-- LEFT -->
+        <div>
+          <div class="hero-eyebrow anim-fade-up">
+            <span class="hero-eyebrow-dot"></span>
+            <span class="hero-eyebrow-text">16 milliards de comptes exposes en 2025</span>
+          </div>
+
+          <h1 class="hero-h1 anim-fade-up anim-d1">
+            Que sait<br>
+            Internet sur
+            <span class="accent text-gradient-primary">vous</span>&nbsp;?
+          </h1>
+
+          <p class="hero-sub anim-fade-up anim-d2">
+            Mots de passe, adresse, numero de telephone…
+            <strong>vos donnees circulent sans que vous le sachiez.</strong>
+            Scopaly vous le montrera en 60 secondes — avec un plan d'action clair.
+          </p>
+
+          <div class="waitlist-badge anim-fade-up anim-d3">
+            <span class="wl-dot"></span>
+            On construit Scopaly — <strong style="color:var(--color-primary)">votre avis compte vraiment</strong>
+          </div>
+
+          <div class="hero-meta anim-fade-up anim-d3">
+            <span>En cours de creation</span>
+            <span>100% transparent</span>
+            <span>RGPD compliant</span>
+          </div>
+
+          <div class="hero-cta-group anim-fade-up anim-d4">
+            <a href="form.html" class="btn-primary" id="cta-hero">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
+              Donner mon avis — 2 minutes
+            </a>
+            <a href="#comment" class="btn-secondary">
+              Comment ca marchera
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- RIGHT: Mockup -->
+        <div class="hero-visual anim-fade-up anim-d3">
+          <div style="position:relative;">
+            <div style="position:absolute;top:-40px;right:-40px;width:200px;height:200px;background:radial-gradient(circle,rgba(192,132,252,0.15) 0%,transparent 70%);pointer-events:none;"></div>
+            <div style="position:absolute;bottom:-30px;left:-30px;width:160px;height:160px;background:radial-gradient(circle,rgba(255,140,97,0.12) 0%,transparent 70%);pointer-events:none;"></div>
+
+            <div class="hero-card glow-primary float-anim">
+              <div class="card-scan-ring"></div>
+              <div class="card-topbar">
+                <div class="card-dot" style="background:#e56b6f;"></div>
+                <div class="card-dot" style="background:#fbbf24;"></div>
+                <div class="card-dot" style="background:#00e68a;"></div>
+                <span class="card-url">scopaly.com/scan/john.doe</span>
+              </div>
+              <div class="score-label">
+                <span>SCORE D'EXPOSITION</span>
+                <span class="score-val">ELEVE — 72/100</span>
+              </div>
+              <div class="score-track">
+                <div class="score-fill" style="--fill: 72%;"></div>
+              </div>
+              <div class="score-range">
+                <span>0 — Invisible</span>
+                <span>100 — Surexpose</span>
+              </div>
+              <div class="result-item danger">
+                <span class="result-icon">⚠</span>
+                <div>
+                  <div class="result-title">3 fuites de donnees detectees</div>
+                  <div class="result-desc">Mots de passe en clair — Adobe, LinkedIn, Canva</div>
+                </div>
+              </div>
+              <div class="result-item warn">
+                <span class="result-icon">⚡</span>
+                <div>
+                  <div class="result-title">Profils publics indexes : 5</div>
+                  <div class="result-desc">Instagram, LinkedIn, X, GitHub…</div>
+                </div>
+              </div>
+              <div class="result-item ok">
+                <span class="result-icon">✓</span>
+                <div>
+                  <div class="result-title">Adresse email principale : propre</div>
+                  <div class="result-desc">Aucune fuite detectee sur les 6 derniers mois</div>
+                </div>
+              </div>
+              <div class="card-footer">Apercu simule · Ce que vous verrez au lancement de Scopaly</div>
+              <div class="scan-beam"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════ -->
+    <!-- TRUST BAR -->
+    <!-- ══════════════════════════════════════════════════ -->
+    <div class="trust-bar">
+      <div class="trust-bar-inner">
+        <div class="trust-item">
+          <span class="t-val" id="counter">0</span>
+          <span>personnes ont deja donne leur avis</span>
+        </div>
+        <div class="trust-item">🇫🇷 Concu et heberge en France</div>
+        <div class="trust-item">🔒 RGPD compliant</div>
+        <div class="trust-item">⚡ Soyez notifie au lancement</div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════ -->
+    <!-- WHAT WE FIND -->
+    <!-- ══════════════════════════════════════════════════ -->
+    <section class="section" style="position:relative;overflow:hidden;">
+      <!-- Blobs decoratifs -->
+      <div class="blob" style="width:400px;height:400px;background:rgba(192,132,252,0.06);top:-100px;right:-120px;animation-duration:14s;"></div>
+      <div class="blob" style="width:300px;height:300px;background:rgba(255,140,97,0.05);bottom:-80px;left:-80px;animation-duration:18s;animation-delay:-6s;"></div>
+      <!-- Dots flottants -->
+      <div class="float-dots">
+        <div class="fdot" style="width:4px;height:4px;background:#c084fc;left:8%;top:20%;animation-duration:6s;"></div>
+        <div class="fdot" style="width:3px;height:3px;background:#ff8c61;left:20%;top:65%;animation-duration:8s;animation-delay:-2s;"></div>
+        <div class="fdot" style="width:5px;height:5px;background:#f2cc8f;left:75%;top:30%;animation-duration:7s;animation-delay:-4s;"></div>
+        <div class="fdot" style="width:3px;height:3px;background:#c084fc;left:88%;top:70%;animation-duration:9s;animation-delay:-1s;"></div>
+        <div class="fdot" style="width:4px;height:4px;background:#00e68a;left:50%;top:85%;animation-duration:6.5s;animation-delay:-3s;"></div>
+      </div>
+      <div class="section-inner">
+        <div class="reveal" style="max-width:600px;">
+          <span class="section-tag">Le concept Scopaly</span>
+          <h2 class="section-h2">Vos donnees circulent.<br><span class="text-gradient-primary">Mais ou exactement ?</span></h2>
+          <p class="section-sub">Notre idee : une plateforme qui analyse automatiquement des dizaines de sources — fuites, data brokers, reseaux sociaux, dark web — et vous dit tout en clair.</p>
+        </div>
+
+        <div class="findings-grid">
+          <div class="finding-card reveal" style="--card-gradient: linear-gradient(90deg,#e56b6f,#ff8c61);">
+            <div class="finding-icon" style="background:rgba(229,107,111,0.1);">🔓</div>
+            <div class="finding-title">Fuites de mots de passe</div>
+            <div class="finding-desc">Vos identifiants presents dans des bases pirates (HaveIBeenPwned et +40 autres sources).</div>
+          </div>
+          <div class="finding-card reveal" style="--card-gradient: linear-gradient(90deg,#fbbf24,#f2cc8f);">
+            <div class="finding-icon" style="background:rgba(251,191,36,0.1);">📧</div>
+            <div class="finding-title">Emails &amp; numeros exposes</div>
+            <div class="finding-desc">Adresses email et numeros de telephone vendus par des data brokers legaux ou illegaux.</div>
+          </div>
+          <div class="finding-card reveal" style="--card-gradient: linear-gradient(90deg,#c084fc,#a855f7);">
+            <div class="finding-icon" style="background:rgba(192,132,252,0.1);">👁</div>
+            <div class="finding-title">Profils publics indexes</div>
+            <div class="finding-desc">Tout ce qu'un moteur de recherche peut trouver sur vous en quelques secondes.</div>
+          </div>
+          <div class="finding-card reveal" style="--card-gradient: linear-gradient(90deg,#ff8c61,#e85a2b);">
+            <div class="finding-icon" style="background:rgba(255,140,97,0.1);">🏠</div>
+            <div class="finding-title">Adresse &amp; donnees perso</div>
+            <div class="finding-desc">Votre domicile, revenus estimes ou statut marital peuvent etre revendus legalement.</div>
+          </div>
+          <div class="finding-card reveal" style="--card-gradient: linear-gradient(90deg,#e56b6f,#c084fc);">
+            <div class="finding-icon" style="background:rgba(229,107,111,0.1);">💬</div>
+            <div class="finding-title">Mentions &amp; forums</div>
+            <div class="finding-desc">Votre nom mentionne sur Reddit, forums, sites d'avis ou dans des articles de presse.</div>
+          </div>
+          <div class="finding-card reveal" style="--card-gradient: linear-gradient(90deg,#00e68a,#60a5fa);">
+            <div class="finding-icon" style="background:rgba(0,230,138,0.1);">🛡</div>
+            <div class="finding-title">Plan de protection personnalise</div>
+            <div class="finding-desc">Pour chaque resultat trouve, on vous explique quoi faire — en francais, sans jargon.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════ -->
+    <!-- HOW IT WORKS -->
+    <!-- ══════════════════════════════════════════════════ -->
+    <section class="section steps-bg" id="comment" style="position:relative;overflow:hidden;">
+      <!-- Data streams verticaux -->
+      <div class="data-streams">
+        <div class="data-stream" style="left:10%;height:180px;animation-duration:4s;animation-delay:0s;"></div>
+        <div class="data-stream" style="left:25%;height:120px;animation-duration:6s;animation-delay:-1.5s;"></div>
+        <div class="data-stream" style="left:40%;height:200px;animation-duration:5s;animation-delay:-3s;"></div>
+        <div class="data-stream" style="left:60%;height:150px;animation-duration:7s;animation-delay:-0.8s;"></div>
+        <div class="data-stream" style="left:75%;height:100px;animation-duration:4.5s;animation-delay:-2s;"></div>
+        <div class="data-stream" style="left:90%;height:160px;animation-duration:5.5s;animation-delay:-4s;"></div>
+      </div>
+      <div class="section-inner" style="position:relative;z-index:1;">
+        <div class="reveal" style="text-align:center;max-width:560px;margin:0 auto;">
+          <span class="section-tag">Comment ca marchera</span>
+          <h2 class="section-h2">Simple comme<br><span class="text-gradient-primary">1, 2, 3</span></h2>
+          <p class="section-sub" style="margin:0 auto;">Un compte Scopaly suffira. Pas besoin d'installer quoi que ce soit. Juste votre email ou votre nom.</p>
+        </div>
+
+        <div class="steps-grid">
+          <div class="steps-line" id="steps-line">
+            <div class="steps-line-fill" id="steps-line-fill"></div>
+          </div>
+          <div class="step-item reveal">
+            <div class="step-number">01</div>
+            <div class="step-title">Connectez-vous</div>
+            <div class="step-desc">Creez votre compte Scopaly gratuit. L'acces sera ouvert progressivement aux betatesteurs inscrits.</div>
+          </div>
+          <div class="step-item reveal">
+            <div class="step-number" style="border-color:var(--color-secondary);color:var(--color-secondary);">02</div>
+            <div class="step-title">Lancez votre scan</div>
+            <div class="step-desc">Entrez votre email, nom ou pseudo. Scopaly interroge des dizaines de sources en temps reel.</div>
+          </div>
+          <div class="step-item reveal">
+            <div class="step-number" style="border-color:var(--color-accent);color:var(--color-accent);">03</div>
+            <div class="step-title">Lisez votre rapport</div>
+            <div class="step-desc">Score d'exposition, liste des trouvailles, et conseils concrets pour chaque probleme identifie.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════ -->
+    <!-- VALIDATION DU BESOIN -->
+    <!-- ══════════════════════════════════════════════════ -->
+    <section class="waitlist-section" style="position:relative;overflow:hidden;">
+      <!-- Blobs -->
+      <div class="blob" style="width:500px;height:500px;background:rgba(192,132,252,0.05);top:-150px;left:-150px;animation-duration:16s;"></div>
+      <div class="blob" style="width:350px;height:350px;background:rgba(255,140,97,0.05);bottom:-100px;right:-100px;animation-duration:12s;animation-delay:-5s;"></div>
+      <!-- Dots -->
+      <div class="float-dots">
+        <div class="fdot" style="width:5px;height:5px;background:#c084fc;left:5%;top:25%;animation-duration:7s;"></div>
+        <div class="fdot" style="width:3px;height:3px;background:#ff8c61;left:15%;top:75%;animation-duration:9s;animation-delay:-3s;"></div>
+        <div class="fdot" style="width:4px;height:4px;background:#f2cc8f;left:92%;top:40%;animation-duration:6s;animation-delay:-1s;"></div>
+        <div class="fdot" style="width:3px;height:3px;background:#00e68a;left:82%;top:80%;animation-duration:8s;animation-delay:-4s;"></div>
+      </div>
+      <div class="waitlist-inner" style="position:relative;z-index:1;">
+        <div class="reveal" style="max-width:600px;">
+          <span class="section-tag">On construit Scopaly — avec vous</span>
+          <h2 class="section-h2">Ce projet, c'est<br><span class="text-gradient-primary">votre probleme aussi ?</span></h2>
+          <p class="section-sub">On valide le besoin avant de developper. Si l'idee vous parle, dites-le nous — votre retour guide directement ce qu'on construit.</p>
+        </div>
+
+        <div class="waitlist-grid">
+          <div class="wl-reasons reveal">
+            <div class="wl-reason">
+              <span class="wl-reason-icon">🔍</span>
+              <div>
+                <div class="wl-reason-title">Un vrai probleme, pas une hypothese</div>
+                <div class="wl-reason-desc">Des millions de personnes ne savent pas que leurs donnees circulent. On veut mesurer si cette inquietude est reelle avant de construire.</div>
+              </div>
+            </div>
+            <div class="wl-reason">
+              <span class="wl-reason-icon">🎯</span>
+              <div>
+                <div class="wl-reason-title">Votre avis oriente le produit</div>
+                <div class="wl-reason-desc">Chaque reponse au formulaire nous aide a prioriser : quelles sources scanner, quelle interface, quel niveau de detail dans les rapports.</div>
+              </div>
+            </div>
+            <div class="wl-reason">
+              <span class="wl-reason-icon">📬</span>
+              <div>
+                <div class="wl-reason-title">Soyez les premiers informes</div>
+                <div class="wl-reason-desc">Laissez votre email pour recevoir une notification des le jour du lancement, avant l'ouverture au grand public.</div>
+              </div>
+            </div>
+            <div class="wl-reason">
+              <span class="wl-reason-icon">🤝</span>
+              <div>
+                <div class="wl-reason-title">Sans engagement, sans prise de tete</div>
+                <div class="wl-reason-desc">2 minutes. Aucune inscription requise. Aucune carte de credit. Juste votre retour honnete sur un besoin qui vous parle ou non.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="reveal">
+            <div class="spots-left">
+              <div class="spots-glow"></div>
+              <div class="spots-number" id="spots-number"><span id="spots-count">0</span></div>
+              <div class="spots-label">personnes ont deja repondu</div>
+              <div class="spots-bar-wrap">
+                <div class="spots-bar-fill" id="spots-bar"></div>
+              </div>
+              <div class="spots-bar-label">Objectif : 500 reponses pour valider le besoin</div>
+              <a href="form.html" class="btn-primary" id="cta-waitlist" style="width:100%;justify-content:center;margin-top:4px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                Donner mon avis — 2 min
+              </a>
+              <div class="spots-cta-note">Gratuit · Anonyme · RGPD</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════ -->
+    <!-- FAQ -->
+    <!-- ══════════════════════════════════════════════════ -->
+    <section class="section" style="background:var(--color-bg-surface-alt);z-index:1;position:relative;">
+      <div class="section-inner" style="max-width:720px;">
+        <div class="reveal" style="text-align:center;">
+          <span class="section-tag">Questions frequentes</span>
+          <h2 class="section-h2">Vous avez des doutes ?<br><span class="text-gradient-primary">C'est normal.</span></h2>
+        </div>
+
+        <div class="faq-list reveal">
+          <div class="faq-item">
+            <button class="faq-q" data-faq="0">
+              Scopaly existe deja ? Quand ca sera disponible ?
+              <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+            <div class="faq-a" id="faq-0">Pas encore. On est en phase de validation du besoin — on verifie que le probleme est reel et suffisamment important pour justifier de construire la solution. Si les retours confirment le besoin, le developpement commence. Laissez votre email pour etre notifie au lancement.</div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-q" data-faq="1">
+              Ca sert a quoi de repondre au formulaire maintenant ?
+              <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+            <div class="faq-a" id="faq-1">Vos reponses nous disent si le probleme est reel pour les gens, quelles fonctionnalites prioriser, et si la proposition de valeur est claire. Chaque retour compte pour decider de ce qu'on developpe — ou non.</div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-q" data-faq="2">
+              Que faites-vous de mon email ?
+              <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+            <div class="faq-a" id="faq-2">Votre email sert uniquement a vous notifier du lancement de Scopaly. Jamais revendu, jamais partage. Donnees hebergees en France. Vous pouvez vous desinscrire a tout moment. Conformite RGPD totale.</div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-q" data-faq="3">
+              Comment Scopaly trouvera-t-il ces informations ?
+              <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+            <div class="faq-a" id="faq-3">L'idee est d'agreger des sources publiques et semi-publiques : bases de fuites connues, data brokers legaux, moteurs de recherche, API de reseaux sociaux. Toutes les sources seront indiquees dans le rapport pour une transparence totale.</div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-q" data-faq="4">
+              Pourquoi faudra-t-il un compte pour utiliser Scopaly ?
+              <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+            <div class="faq-a" id="faq-4">Un compte permet de sauvegarder vos rapports, de recevoir des alertes automatiques si de nouvelles fuites vous concernent, et de suivre l'evolution de votre score dans le temps. C'est aussi une garantie de securite pour vos donnees de scan.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════ -->
+    <!-- CTA FINAL -->
+    <!-- ══════════════════════════════════════════════════ -->
+    <section class="cta-section">
+      <div class="cta-glow"></div>
+      <div style="position:relative;z-index:1;">
+        <span class="section-tag" style="display:block;text-align:center;margin-bottom:16px;">Votre avis compte</span>
+        <h2 class="cta-h2">
+          Ce probleme vous parle ?<br>
+          <span class="text-gradient-shimmer">Dites-le nous.</span>
+        </h2>
+        <p class="cta-sub">2 minutes de votre temps peuvent directement influencer ce qu'on construit. Et si on lance, vous serez les premiers a le savoir.</p>
+        <a href="form.html" class="btn-primary" style="font-size:16px;padding:16px 36px;margin:0 auto;display:inline-flex;" id="cta-bottom">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          Participer a l'enquete — gratuit
+        </a>
+        <p class="cta-disclaimer">🔒 Anonyme · Sans engagement · Donnees en France · RGPD</p>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════ -->
+    <!-- FOOTER -->
+    <!-- ══════════════════════════════════════════════════ -->
+    <footer>
+      <div class="footer-inner">
+        <div class="footer-copy">© 2026 Scopaly — Tous droits reserves</div>
+        <div class="footer-links">
+          <a href="#">Politique de confidentialite</a>
+          <a href="#">Mentions legales</a>
+          <a href="#">Contact</a>
+        </div>
+      </div>
+    </footer>
+
+    <!-- ══════════════════════════════════════════════════ -->
+    <!-- JS -->
+    <!-- ══════════════════════════════════════════════════ -->
+    <script>
+      // ── Particle system ──────────────────────────────
+      (function () {
+        const canvas = document.getElementById('particle-canvas');
+        const ctx = canvas.getContext('2d');
+        let W, H;
+
+        function resize() {
+          W = canvas.width  = window.innerWidth;
+          H = canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize, { passive: true });
+        resize();
+
+        const COLORS = ['rgba(192,132,252,', 'rgba(255,140,97,', 'rgba(242,204,143,', 'rgba(0,230,138,'];
+
+        class Particle {
+          constructor() { this.reset(true); }
+          reset(init) {
+            this.x = Math.random() * W;
+            this.y = init ? Math.random() * H : Math.random() * H;
+            this.r = 0.8 + Math.random() * 2;
+            this.vx = (Math.random() - 0.5) * 0.4;
+            this.vy = (Math.random() - 0.5) * 0.4;
+            this.alpha = 0.25 + Math.random() * 0.6;
+            this.color = COLORS[Math.floor(Math.random() * COLORS.length)];
+            this.pulse = Math.random() * Math.PI * 2;
+            this.pulseSpeed = 0.01 + Math.random() * 0.02;
+          }
+          update() {
+            this.x += this.vx; this.y += this.vy;
+            this.pulse += this.pulseSpeed;
+            const r = this.r * (0.8 + 0.2 * Math.sin(this.pulse));
+            if (this.x < -10 || this.x > W + 10 || this.y < -10 || this.y > H + 10) this.reset(false);
+            return r;
+          }
+          draw() {
+            const r = this.update();
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, r, 0, Math.PI * 2);
+            ctx.fillStyle = this.color + this.alpha + ')';
+            ctx.fill();
+          }
+        }
+
+        const particles = [];
+        for (let i = 0; i < 120; i++) particles.push(new Particle());
+
+        function drawLines() {
+          for (let i = 0; i < particles.length; i++) {
+            for (let j = i + 1; j < particles.length; j++) {
+              const dx = particles[i].x - particles[j].x;
+              const dy = particles[i].y - particles[j].y;
+              const dist = Math.sqrt(dx * dx + dy * dy);
+              if (dist < 140) {
+                const alpha = (1 - dist / 140) * 0.09;
+                ctx.beginPath();
+                ctx.moveTo(particles[i].x, particles[i].y);
+                ctx.lineTo(particles[j].x, particles[j].y);
+                ctx.strokeStyle = `rgba(192,132,252,${alpha})`;
+                ctx.lineWidth = 0.6;
+                ctx.stroke();
+              }
+            }
+          }
+        }
+
+        function loop() {
+          ctx.clearRect(0, 0, W, H);
+          particles.forEach(p => p.draw());
+          drawLines();
+          requestAnimationFrame(loop);
+        }
+        loop();
+      })();
+
+      // ── Counter animation ─────────────────────────────
+      function animateCounter(el, target, duration) {
+        const start = performance.now();
+        const update = (now) => {
+          const p = Math.min((now - start) / duration, 1);
+          const eased = 1 - Math.pow(1 - p, 3);
+          el.textContent = Math.floor(eased * target).toLocaleString('fr-FR');
+          if (p < 1) requestAnimationFrame(update);
+        };
+        requestAnimationFrame(update);
+      }
+
+      // ── Intersection Observer ─────────────────────────
+      const revealObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry, i) => {
+          if (entry.isIntersecting) {
+            setTimeout(() => entry.target.classList.add('visible'), i * 80);
+            revealObserver.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+      document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+      // Counter (trust bar)
+      const counterEl = document.getElementById('counter');
+      const counterObs = new IntersectionObserver((e) => {
+        if (e[0].isIntersecting) { animateCounter(counterEl, 247, 1800); counterObs.disconnect(); }
+      });
+      counterObs.observe(counterEl);
+
+      // Counter (spots section)
+      const spotsCountEl = document.getElementById('spots-count');
+      if (spotsCountEl) {
+        const spotsCountObs = new IntersectionObserver((e) => {
+          if (e[0].isIntersecting) { animateCounter(spotsCountEl, 247, 2000); spotsCountObs.disconnect(); }
+        });
+        spotsCountObs.observe(spotsCountEl);
+      }
+
+      // Steps line animation
+      const lineEl = document.getElementById('steps-line-fill');
+      const lineObs = new IntersectionObserver((e) => {
+        if (e[0].isIntersecting) { lineEl.classList.add('animate'); lineObs.disconnect(); }
+      }, { threshold: 0.5 });
+      if (lineEl) lineObs.observe(lineEl);
+
+      // Spots bar animation
+      const spotsBar = document.getElementById('spots-bar');
+      const spotsObs = new IntersectionObserver((e) => {
+        if (e[0].isIntersecting) {
+          spotsBar.style.width = '51%';
+          spotsObs.disconnect();
+        }
+      }, { threshold: 0.3 });
+      if (spotsBar) spotsObs.observe(spotsBar);
+
+      // ── FAQ accordion ─────────────────────────────────
+      document.querySelectorAll('.faq-q').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const idx = btn.dataset.faq;
+          const answer = document.getElementById('faq-' + idx);
+          const isOpen = answer.classList.contains('open');
+          document.querySelectorAll('.faq-a').forEach(a => a.classList.remove('open'));
+          document.querySelectorAll('.faq-q').forEach(b => b.classList.remove('open'));
+          if (!isOpen) { answer.classList.add('open'); btn.classList.add('open'); }
+        });
+      });
+
+      // ── Nav scroll effect ─────────────────────────────
+      const nav = document.getElementById('nav');
+      window.addEventListener('scroll', () => {
+        nav.style.background = window.scrollY > 20 ? 'rgba(2,5,23,0.97)' : 'rgba(2,5,23,0.75)';
+      }, { passive: true });
+
+      // ── CTA tracking ─────────────────────────────────
+      document.querySelectorAll('[id^="cta-"]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          if (typeof gtag !== 'undefined') gtag('event', 'cta_click', { cta_id: btn.id });
+        });
+      });
+    </script>
+  </body>
+</html>
