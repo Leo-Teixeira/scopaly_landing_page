@@ -3,8 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Scopaly — Partagez votre avis</title>
-    <meta name="description" content="Aidez-nous a comprendre si le besoin est reel. 2 minutes, anonyme, et vous serez notifie si on lance." />
+    <title>Scopaly — Rejoignez la bêta privée</title>
+    <meta name="description" content="Préinscrivez-vous à la bêta Scopaly et soyez parmi les premiers à analyser votre empreinte numérique. Accès gratuit, sans engagement." />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="color.css" />
@@ -490,13 +490,13 @@
           <span class="logo-name">Scopaly</span>
         </a>
         <h1 class="header-title">
-          Aidez-nous a construire<br>
-          <span class="text-gradient">le bon outil</span>
+          Rejoignez la bêta<br>
+          <span class="text-gradient">en avant-première</span>
         </h1>
         <div class="header-sub">
-          <span>⏱ 2 minutes</span>
-          <span>🔒 Anonyme</span>
-          <span>📬 Notifie au lancement</span>
+          <span>⚡ 1 minute</span>
+          <span>🔒 Sans engagement</span>
+          <span>🎯 Accès prioritaire</span>
         </div>
       </div>
 
@@ -506,7 +506,7 @@
           <!-- injected by JS -->
         </div>
         <div class="progress-label">
-          Etape <span class="current" id="step-label-current">1</span> sur 4
+          Étape <span class="current" id="step-label-current">1</span> sur 2
           <span id="step-label-name" style="margin-left:8px;color:var(--color-text-secondary);"></span>
         </div>
       </div>
@@ -516,198 +516,84 @@
 
         <!-- ═══════ STEP 1 ═══════ -->
         <div class="step-content active" id="step-1">
-          <div class="step-tag">Etape 1/4 — Qui etes-vous</div>
-
-          <div class="question" id="q-profile">
-            <div class="q-label">Vous repondez en tant que... <span class="req">*</span></div>
-            <div class="chips grid-2" id="chips-profile">
-              <div class="chip profile-chip" data-val="particulier">
-                <span class="chip-icon">👤</span>
-                <span class="chip-label">Particulier</span>
-                <span class="chip-sub">Pour moi-meme</span>
-              </div>
-              <div class="chip profile-chip" data-val="pro">
-                <span class="chip-icon">🏢</span>
-                <span class="chip-label">Professionnel</span>
-                <span class="chip-sub">Pour mon entreprise</span>
-              </div>
-            </div>
-            <div class="q-error" id="err-profile">Selectionnez une option</div>
-          </div>
-
-          <div class="question" id="q-age">
-            <div class="q-label">Tranche d'age <span class="req">*</span></div>
-            <div class="chips" id="chips-age">
-              <div class="chip" data-val="18-24">18-24</div>
-              <div class="chip" data-val="25-34">25-34</div>
-              <div class="chip" data-val="35-44">35-44</div>
-              <div class="chip" data-val="45-54">45-54</div>
-              <div class="chip" data-val="55+">55+</div>
-            </div>
-            <div class="q-error" id="err-age">Selectionnez votre tranche d'age</div>
-          </div>
-        </div>
-
-        <!-- ═══════ STEP 2 ═══════ -->
-        <div class="step-content" id="step-2">
-          <div class="step-tag">Etape 2/4 — Votre perception</div>
-
-          <div class="question" id="q-awareness">
-            <div class="q-label">Votre niveau de connaissance sur votre "presence en ligne" ? <span class="req">*</span></div>
-            <div class="chips grid-1" id="chips-awareness">
-              <div class="chip awareness-chip" data-val="aucune">
-                <span class="a-label">Aucune idee</span>
-                <span class="a-desc">Je n'y ai jamais pense</span>
-              </div>
-              <div class="chip awareness-chip" data-val="vague">
-                <span class="a-label">Vague</span>
-                <span class="a-desc">J'en entends parler aux infos</span>
-              </div>
-              <div class="chip awareness-chip" data-val="conscient">
-                <span class="a-label">Conscient</span>
-                <span class="a-desc">Je sais que des donnees circulent</span>
-              </div>
-              <div class="chip awareness-chip" data-val="informe">
-                <span class="a-label">Bien informe</span>
-                <span class="a-desc">Je connais les risques precis</span>
-              </div>
-            </div>
-            <div class="q-error" id="err-awareness">Selectionnez une option</div>
-          </div>
-
-          <div class="question" id="q-worry">
-            <div class="q-label">Derniere fois que vos donnees en ligne vous ont preoccupe ? <span class="req">*</span></div>
-            <div class="chips" id="chips-worry">
-              <div class="chip" data-val="jamais">Jamais</div>
-              <div class="chip" data-val="longtemps">Plus d'un an</div>
-              <div class="chip" data-val="mois">Ces derniers mois</div>
-              <div class="chip" data-val="semaine">Cette semaine</div>
-            </div>
-            <div class="q-error" id="err-worry">Selectionnez une option</div>
-          </div>
-
-          <div class="question" id="q-triggers">
-            <div class="q-label">Qu'est-ce qui a declenche cette preoccupation ? <span class="req">*</span></div>
-            <div class="q-hint">Plusieurs choix possibles</div>
-            <div class="chips grid-1" id="chips-triggers">
-              <div class="chip" data-val="fuite_actu">Une fuite de donnees dans l'actualite</div>
-              <div class="chip" data-val="email_suspect">Un email / SMS suspect recu</div>
-              <div class="chip" data-val="google_nom">J'ai google mon nom et trouve des trucs</div>
-              <div class="chip" data-val="proche_victime">Un proche a ete victime (hack, usurpation...)</div>
-              <div class="chip" data-val="jamais">Ca ne m'a jamais preoccupe</div>
-              <div class="chip" data-val="autre">Autre</div>
-            </div>
-            <div class="q-error" id="err-triggers">Selectionnez au moins une option</div>
-          </div>
-        </div>
-
-        <!-- ═══════ STEP 3 ═══════ -->
-        <div class="step-content" id="step-3">
-          <div class="step-tag">Etape 3/4 — Votre vecu</div>
-
-          <div class="question" id="q-actions">
-            <div class="q-label">Comment verifiez-vous votre exposition en ligne aujourd'hui ? <span class="req">*</span></div>
-            <div class="q-hint">Plusieurs choix possibles</div>
-            <div class="chips grid-1" id="chips-actions">
-              <div class="chip" data-val="rien">Rien du tout</div>
-              <div class="chip" data-val="google">Je google mon nom de temps en temps</div>
-              <div class="chip" data-val="hibp">J'utilise Have I Been Pwned ou similaire</div>
-              <div class="chip" data-val="mdp">Je gere mes mots de passe (gestionnaire)</div>
-              <div class="chip" data-val="pro">J'ai fait appel a un service / outil pro</div>
-              <div class="chip" data-val="autre">Autre</div>
-            </div>
-            <div class="q-error" id="err-actions">Selectionnez au moins une option</div>
-          </div>
-
-          <div class="question" id="q-frustrations">
-            <div class="q-label">Qu'est-ce qui vous freine ou vous frustre le plus ? <span class="req">*</span></div>
-            <div class="q-hint">Plusieurs choix possibles</div>
-            <div class="chips grid-1" id="chips-frustrations">
-              <div class="chip" data-val="sais_pas">Je ne sais meme pas par ou commencer</div>
-              <div class="chip" data-val="trop_cher">Les outils serieux sont trop chers</div>
-              <div class="chip" data-val="trop_complexe">C'est trop technique / jargon</div>
-              <div class="chip" data-val="confiance">Je ne fais pas confiance aux resultats</div>
-              <div class="chip" data-val="partiel">Les resultats sont toujours partiels</div>
-              <div class="chip" data-val="aucune">Pas de frustration, je ne cherche pas</div>
-            </div>
-            <div class="q-error" id="err-frustrations">Selectionnez au moins une option</div>
-          </div>
-        </div>
-
-        <!-- ═══════ STEP 4 ═══════ -->
-        <div class="step-content" id="step-4">
-          <div class="step-tag">Etape 4/4 — Notre idee</div>
-
-          <div class="pitch-box">
-            <div class="pitch-tag">L'IDEE SCOPALY</div>
-            <p class="pitch-text">
-              Vous entrez votre email ou votre nom → en <strong>60 secondes</strong>, vous obtenez un score d'exposition avec la liste de tout ce qui circule sur vous (fuites, data brokers, reseaux sociaux...). <strong>Chaque resultat est explique simplement</strong> avec des actions concretes pour vous proteger.
-            </p>
-          </div>
-
-          <div class="question" id="q-reaction">
-            <div class="q-label">Votre reaction honnete ? <span class="req">*</span></div>
-            <div class="chips grid-1" id="chips-reaction">
-              <div class="chip reaction-chip r-indifferent" data-val="indifferent">Bof, pas convaincu</div>
-              <div class="chip reaction-chip r-curieux" data-val="curieux">Curieux, je testerais</div>
-              <div class="chip reaction-chip r-interesse" data-val="tres_interesse">Tres interesse, j'en ai besoin</div>
-              <div class="chip reaction-chip r-mefiant" data-val="mefiant">Mefiant — encore un outil qui fait peur pour vendre</div>
-            </div>
-            <div class="q-error" id="err-reaction">Selectionnez une option</div>
-          </div>
-
-          <div class="question">
-            <div class="q-label">Qu'est-ce qui serait le plus important pour vous ?</div>
-            <div class="q-hint">Optionnel — repondez librement</div>
-            <textarea
-              class="form-textarea"
-              id="input-feature"
-              rows="3"
-              placeholder="Ex: voir mes mots de passe fuites, savoir qui peut me trouver, avoir des conseils..."></textarea>
-          </div>
+          <div class="step-tag">Étape 1/2 — Votre accès</div>
 
           <div class="question" id="q-email">
             <div class="q-label">Votre email <span class="req">*</span></div>
-            <div class="q-hint">Pour etre notifie si on lance — aucun spam, desinscription libre</div>
+            <div class="q-hint">Un seul email à l'ouverture de votre accès. Zéro spam.</div>
             <input
               type="email"
               class="form-input"
               id="input-email"
               placeholder="vous@exemple.com"
               autocomplete="email" />
-            <div class="q-error" id="err-email">Email invalide ou manquant</div>
+            <div class="q-error" id="err-email">Adresse email invalide ou manquante</div>
+          </div>
+
+          <div class="question" id="q-firstname">
+            <div class="q-label">Votre prénom <span class="req">*</span></div>
+            <input
+              type="text"
+              class="form-input"
+              id="input-firstname"
+              placeholder="Ex : Marie"
+              autocomplete="given-name" />
+            <div class="q-error" id="err-firstname">Veuillez renseigner votre prénom</div>
           </div>
 
           <div class="question" id="q-rgpd">
             <div class="rgpd-row" id="rgpd-row" onclick="toggleRgpd()">
               <div class="rgpd-box" id="rgpd-box"></div>
               <p class="rgpd-text">
-                J'accepte que mes reponses anonymisees soient utilisees pour orienter le developpement de Scopaly.
-                Mon email sera utilise uniquement pour m'informer du lancement. <span class="req">*</span>
+                J'accepte que mon email soit utilisé pour recevoir mon accès bêta Scopaly, conformément au RGPD (France). Aucune donnée ne sera revendue. <span class="req">*</span>
               </p>
             </div>
             <div class="q-error" id="err-rgpd">Vous devez accepter pour continuer</div>
           </div>
         </div>
 
+        <!-- ═══════ STEP 2 ═══════ -->
+        <div class="step-content" id="step-2">
+          <div class="step-tag">Étape 2/2 — Une dernière question</div>
+
+          <div class="pitch-box">
+            <div class="pitch-tag">PRESQUE TERMINÉ 🚀</div>
+            <p class="pitch-text">
+              Votre place est réservée. Cette question nous aide à construire les bonnes priorités — elle est <strong>100% optionnelle</strong>.
+            </p>
+          </div>
+
+          <div class="question" id="q-concern">
+            <div class="q-label">Ce qui vous préoccupe le plus en ligne :</div>
+            <div class="q-hint">Optionnel — plusieurs choix possibles</div>
+            <div class="chips grid-1" id="chips-concern">
+              <div class="chip" data-val="fuites">🔑 Mes mots de passe exposés dans des fuites</div>
+              <div class="chip" data-val="brokers">🗂️ Mes données revendues par des data brokers</div>
+              <div class="chip" data-val="visibilite">👁️ Ce que les autres peuvent trouver sur moi</div>
+              <div class="chip" data-val="usurpation">😈 Le risque d'usurpation d'identité</div>
+              <div class="chip" data-val="darkweb">🌑 Mes données sur le dark web</div>
+            </div>
+          </div>
+        </div>
+
         <!-- ═══════ SUCCESS ═══════ -->
         <div class="success-screen" id="success-screen">
-          <div class="success-icon">✓</div>
-          <h2 class="success-title">Merci pour votre retour.</h2>
+          <div class="success-icon">🚀</div>
+          <h2 class="success-title">Vous êtes sur la liste !</h2>
           <p class="success-sub">
-            Vos reponses nous aident a decider si ce projet vaut la peine d'etre developpe — et comment. <strong style="color:var(--color-text-primary)">C'est exactement ce dont on a besoin.</strong>
+            Bienvenue parmi les premiers bêta-testeurs Scopaly. Vous recevrez votre accès <strong style="color:var(--color-text-primary)">dès l'ouverture de la bêta privée.</strong>
           </p>
           <div class="position-badge">
-            <div class="position-label">Vous etes dans la liste</div>
+            <div class="position-label">Votre place est réservée</div>
             <div style="font-size:15px;color:var(--color-text-secondary);margin-top:6px;line-height:1.5;">
-              Nous vous ecrirons si Scopaly se lance.
+              Un seul email à l'ouverture de votre accès. Promis.
             </div>
           </div>
           <p class="success-disclaimer">
-            Reponses anonymisees · Donnees en France · Desinscription libre a tout moment
+            Données hébergées en France · Conformité RGPD · Suppression sur demande : hello@scopaly.fr
           </p>
           <a href="landing.html" class="back-link">
-            ← Retour a l'accueil
+            ← Retour à l'accueil
           </a>
         </div>
 
@@ -715,13 +601,13 @@
         <div class="form-nav" id="form-nav">
           <button class="btn-back" id="btn-back" style="display:none" onclick="goBack()">←</button>
           <button class="btn-next" id="btn-next" onclick="goNext()">
-            Continuer <span>→</span>
+            Continuer →
           </button>
         </div>
       </div>
 
       <div class="form-footer">
-        🔒 Anonyme · Donnees en France · RGPD
+        🔒 Sans engagement · Données hébergées en France · Conforme RGPD
       </div>
     </div>
 
@@ -729,29 +615,20 @@
       // ═══════════════════════════════════════════════
       // STATE
       // ═══════════════════════════════════════════════
-      const TOTAL_STEPS = 4;
+      const TOTAL_STEPS = 2;
       let currentStep = 1;
       let rgpdChecked = false;
 
       const form = {
-        profile: '',
-        age_range: '',
-        awareness: '',
-        last_worry: '',
-        triggers: [],
-        current_actions: [],
-        frustrations: [],
-        reaction: '',
-        important_feature: '',
+        firstname: '',
         email: '',
+        concerns: [],
         rgpd: false,
       };
 
       const STEPS_META = [
-        { label: 'Vous', icon: '👤' },
-        { label: 'Conscience', icon: '🧠' },
-        { label: 'Vecu', icon: '⚡' },
-        { label: 'Solution', icon: '🔍' },
+        { label: 'Votre accès', icon: '✉️' },
+        { label: 'Vos priorités', icon: '🎯' },
       ];
 
       // ═══════════════════════════════════════════════
@@ -787,55 +664,18 @@
       // CHIP SELECTION
       // ═══════════════════════════════════════════════
       function initChips() {
-        // Single-select chips
-        [
-          ['chips-profile', 'profile', false],
-          ['chips-awareness', 'awareness', false],
-          ['chips-worry', 'last_worry', false],
-          ['chips-reaction', 'reaction', false],
-        ].forEach(([containerId, key, multi]) => {
-          const container = document.getElementById(containerId);
-          if (!container) return;
-          container.querySelectorAll('.chip').forEach(chip => {
-            chip.addEventListener('click', () => {
-              container.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
-              chip.classList.add('selected');
-              form[key] = chip.dataset.val;
-              clearError('err-' + (key === 'last_worry' ? 'worry' : key === 'age_range' ? 'age' : key));
-            });
-          });
-        });
-
-        // Age — single
-        const ageContainer = document.getElementById('chips-age');
-        ageContainer.querySelectorAll('.chip').forEach(chip => {
+        // Multi-select chips — concerns (step 2, optional)
+        const container = document.getElementById('chips-concern');
+        if (!container) return;
+        container.querySelectorAll('.chip').forEach(chip => {
           chip.addEventListener('click', () => {
-            ageContainer.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
-            chip.classList.add('selected');
-            form.age_range = chip.dataset.val;
-            clearError('err-age');
-          });
-        });
-
-        // Multi-select chips
-        [
-          ['chips-triggers', 'triggers', 'err-triggers'],
-          ['chips-actions', 'current_actions', 'err-actions'],
-          ['chips-frustrations', 'frustrations', 'err-frustrations'],
-        ].forEach(([containerId, key, errId]) => {
-          const container = document.getElementById(containerId);
-          if (!container) return;
-          container.querySelectorAll('.chip').forEach(chip => {
-            chip.addEventListener('click', () => {
-              chip.classList.toggle('selected');
-              const val = chip.dataset.val;
-              if (form[key].includes(val)) {
-                form[key] = form[key].filter(v => v !== val);
-              } else {
-                form[key].push(val);
-              }
-              if (form[key].length > 0) clearError(errId);
-            });
+            chip.classList.toggle('selected');
+            const val = chip.dataset.val;
+            if (form.concerns.includes(val)) {
+              form.concerns = form.concerns.filter(v => v !== val);
+            } else {
+              form.concerns.push(val);
+            }
           });
         });
       }
@@ -872,24 +712,16 @@
         let ok = true;
 
         if (currentStep === 1) {
-          if (!form.profile)    { showError('err-profile'); ok = false; }
-          if (!form.age_range)  { showError('err-age');     ok = false; }
-        }
-        if (currentStep === 2) {
-          if (!form.awareness)          { showError('err-awareness'); ok = false; }
-          if (!form.last_worry)         { showError('err-worry');     ok = false; }
-          if (form.triggers.length === 0) { showError('err-triggers'); ok = false; }
-        }
-        if (currentStep === 3) {
-          if (form.current_actions.length === 0) { showError('err-actions');      ok = false; }
-          if (form.frustrations.length === 0)    { showError('err-frustrations'); ok = false; }
-        }
-        if (currentStep === 4) {
-          if (!form.reaction) { showError('err-reaction'); ok = false; }
           const email = document.getElementById('input-email').value.trim();
           if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
             showError('err-email');
             document.getElementById('input-email').classList.add('has-error');
+            ok = false;
+          }
+          const firstname = document.getElementById('input-firstname').value.trim();
+          if (!firstname) {
+            showError('err-firstname');
+            document.getElementById('input-firstname').classList.add('has-error');
             ok = false;
           }
           if (!form.rgpd) {
@@ -898,6 +730,7 @@
             ok = false;
           }
         }
+        // Step 2 is fully optional — no validation needed
         return ok;
       }
 
@@ -917,11 +750,11 @@
         document.getElementById('btn-back').style.display = n > 1 ? 'block' : 'none';
         const btnNext = document.getElementById('btn-next');
         if (n < TOTAL_STEPS) {
-          btnNext.innerHTML = 'Continuer <span>→</span>';
+          btnNext.innerHTML = 'Continuer →';
           btnNext.className = 'btn-next';
           btnNext.onclick = goNext;
         } else {
-          btnNext.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg> Envoyer & rejoindre l'early access`;
+          btnNext.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg> Rejoindre la bêta`;
           btnNext.className = 'btn-submit';
           btnNext.onclick = submitForm;
         }
@@ -954,13 +787,11 @@
         if (!validate()) return;
 
         form.email = document.getElementById('input-email').value.trim();
-        form.important_feature = document.getElementById('input-feature').value.trim();
+        form.firstname = document.getElementById('input-firstname').value.trim();
 
         const payload = {
           ...form,
-          triggers: form.triggers.join(', '),
-          current_actions: form.current_actions.join(', '),
-          frustrations: form.frustrations.join(', '),
+          concerns: form.concerns.join(', '),
           timestamp: new Date().toISOString(),
           utm: new URLSearchParams(window.location.search).get('utm_source') || 'direct',
         };
@@ -1024,6 +855,10 @@
       document.getElementById('input-email').addEventListener('input', function() {
         this.classList.remove('has-error');
         clearError('err-email');
+      });
+      document.getElementById('input-firstname').addEventListener('input', function() {
+        this.classList.remove('has-error');
+        clearError('err-firstname');
       });
 
       // ═══════════════════════════════════════════════
