@@ -313,15 +313,15 @@
       .score-label .score-val { color: var(--color-danger); font-weight: 700; }
       .score-track { height: 10px; background: var(--color-bg-surface-alt); border-radius: 9999px; overflow: hidden; margin-bottom: 6px; }
       .score-fill { height: 100%; border-radius: 9999px; background: linear-gradient(90deg, #c084fc 0%, #ff8c61 55%, #e56b6f 100%); animation: fillBar 2s 0.5s ease-out forwards; width: 0%; }
-      .score-range { display: flex; justify-content: space-between; font-size: 9px; font-family: 'JetBrains Mono', monospace; color: var(--color-text-tertiary); margin-bottom: 20px; }
+      .score-range { display: flex; justify-content: space-between; font-size: 11px; font-family: 'JetBrains Mono', monospace; color: var(--color-text-tertiary); margin-bottom: 20px; }
       .result-item { display: flex; align-items: flex-start; gap: 12px; padding: 12px 14px; border-radius: 12px; border: 1px solid; margin-bottom: 8px; }
       .result-item.danger { background: rgba(229,107,111,0.07); border-color: rgba(229,107,111,0.15); }
       .result-item.warn   { background: rgba(251,191,36,0.06);  border-color: rgba(251,191,36,0.15);  }
       .result-item.ok     { background: rgba(0,230,138,0.06);   border-color: rgba(0,230,138,0.15);   }
       .result-icon { font-size: 14px; margin-top: 1px; flex-shrink: 0; }
       .result-title { font-size: 12px; font-weight: 700; color: var(--color-text-primary); margin-bottom: 2px; }
-      .result-desc  { font-size: 10px; color: var(--color-text-tertiary); }
-      .card-footer  { margin-top: 14px; text-align: center; font-size: 9px; font-family: 'JetBrains Mono', monospace; color: var(--color-text-tertiary); }
+      .result-desc  { font-size: 12px; color: var(--color-text-tertiary); }
+      .card-footer  { margin-top: 14px; text-align: center; font-size: 11px; font-family: 'JetBrains Mono', monospace; color: var(--color-text-tertiary); }
 
       /* ── TRUST BAR ── */
       .trust-bar {
@@ -530,11 +530,18 @@
         .hero-inner { grid-template-columns: 1fr; gap: 48px; }
         .hero-visual { order: -1; }
         .hero-h1 { font-size: 2rem; }
-        .steps-grid { grid-template-columns: 1fr; gap: 40px; }
+        .steps-grid { grid-template-columns: 1fr; gap: 0; }
         .steps-line { display: none; }
         .hero-card { max-width: 400px; margin: 0 auto; }
         .footer-inner { flex-direction: column; align-items: flex-start; }
         .waitlist-grid { grid-template-columns: 1fr; }
+        .step-item {
+          flex-direction: row; text-align: left; align-items: flex-start; gap: 20px;
+          padding: 20px 0; border-bottom: 1px solid var(--color-border-primary);
+        }
+        .step-item:last-child { border-bottom: none; }
+        .step-item .step-number { margin-bottom: 0; flex-shrink: 0; }
+        .step-item > div:last-child { padding-top: 8px; }
       }
     </style>
   </head>
@@ -614,12 +621,6 @@
             Soyez parmi les <strong style="color:var(--color-primary)">premiers</strong> à tester la bêta
           </div>
 
-          <div class="hero-meta anim-fade-up anim-d3">
-            <span>Bêta en accès limité</span>
-            <span>Lancement imminent</span>
-            <span>RGPD · France</span>
-          </div>
-
           <div class="hero-cta-group anim-fade-up anim-d4">
             <a href="form.html" class="btn-primary" id="cta-hero">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
@@ -684,27 +685,6 @@
           </div>
         </div>
       </div>
-    </section>
-
-    <!-- ══════════════════════════════════════════════════ -->
-    <!-- TRUST BAR -->
-    <!-- ══════════════════════════════════════════════════ -->
-    <div class="trust-bar">
-      <div class="trust-bar-inner">
-        <div class="trust-item">
-          <span class="t-val" id="counter">0</span>
-          <span>inscrits sur la liste bêta</span>
-        </div>
-        <div class="trust-item">🇫🇷 Conçu et hébergé en France</div>
-        <div class="trust-item">🔒 Conforme RGPD</div>
-        <div class="trust-item">📬 Accès prioritaire au lancement</div>
-      </div>
-    </div>
-
-    <!-- ══════════════════════════════════════════════════ -->
-    <!-- STADE DU PROJET -->
-    <!-- ══════════════════════════════════════════════════ -->
-    <section class="section" style="padding:48px 24px;position:relative;z-index:1;">
       <div class="section-inner reveal" style="max-width:720px;margin:0 auto;">
         <div style="text-align:center;margin-bottom:28px;">
           <span class="section-tag">Où en sommes-nous ?</span>
@@ -713,20 +693,27 @@
           <div style="padding:20px 16px;border:1px solid var(--color-border-primary);border-radius:var(--radius-lg);background:var(--color-bg-surface);">
             <div style="font-size:22px;margin-bottom:8px;">💡</div>
             <div style="font-size:13px;font-weight:700;color:var(--color-text-primary);margin-bottom:6px;">Produit conçu</div>
-            <div style="font-size:11px;color:var(--color-success);font-family:'JetBrains Mono',monospace;">✓ Fonctionnalités définies</div>
+            <div style="font-size:11px;color:var(--color-success);font-family:'JetBrains Mono',monospace;">🇫🇷 Conçu et hébergé en France</div>
           </div>
           <div style="padding:20px 16px;border:2px solid var(--color-primary);border-radius:var(--radius-lg);background:var(--color-primary-muted);">
             <div style="font-size:22px;margin-bottom:8px;">🚀</div>
             <div style="font-size:13px;font-weight:700;color:var(--color-text-primary);margin-bottom:6px;">Bêta privée</div>
-            <div style="font-size:11px;color:var(--color-primary);font-family:'JetBrains Mono',monospace;">← On est ici</div>
+            <div style="font-size:11px;color:var(--color-primary);font-family:'JetBrains Mono',monospace;">🔒 Conforme RGPD</div>
           </div>
           <div style="padding:20px 16px;border:1px solid var(--color-border-primary);border-radius:var(--radius-lg);background:var(--color-bg-surface);opacity:0.45;">
             <div style="font-size:22px;margin-bottom:8px;">🌐</div>
             <div style="font-size:13px;font-weight:700;color:var(--color-text-primary);margin-bottom:6px;">Lancement public</div>
-            <div style="font-size:11px;color:var(--color-text-tertiary);font-family:'JetBrains Mono',monospace;">Prochainement</div>
+            <div style="font-size:11px;color:var(--color-text-tertiary);font-family:'JetBrains Mono',monospace;">📬 Accès prioritaire au lancement</div>
           </div>
         </div>
       </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════ -->
+    <!-- STADE DU PROJET -->
+    <!-- ══════════════════════════════════════════════════ -->
+    <section class="section" style="position:relative;z-index:1;">
+
     </section>
 
     <!-- ══════════════════════════════════════════════════ -->
@@ -846,37 +833,37 @@
       <div class="waitlist-inner" style="position:relative;z-index:1;">
         <div class="reveal" style="max-width:600px;">
           <span class="section-tag">Accès bêta prioritaire</span>
-          <h2 class="section-h2">Les places sont limitées.<br><span class="text-gradient-primary">Réservez la vôtre maintenant.</span></h2>
+          <h2 class="section-h2">Les places sont limitées.<br><span class="text-gradient-primary">Réservez la dès maintenant.</span></h2>
           <p class="section-sub">Préinscrivez-vous pour accéder en avant-première à Scopaly et façonner les fonctionnalités qui comptent vraiment.</p>
         </div>
 
         <div class="waitlist-grid">
           <div class="wl-reasons reveal">
             <div class="wl-reason">
-              <span class="wl-reason-icon">🔍</span>
+              <span class="wl-reason-icon">🥇</span>
               <div>
-                <div class="wl-reason-title">🥇 Accès bêta en avant-première</div>
+                <div class="wl-reason-title">Accès bêta en avant-première</div>
                 <div class="wl-reason-desc">Les inscrits accèdent à Scopaly avant l'ouverture publique — dès les premiers jours.</div>
               </div>
             </div>
             <div class="wl-reason">
-              <span class="wl-reason-icon">🎯</span>
+              <span class="wl-reason-icon">🎁</span>
               <div>
-                <div class="wl-reason-title">🎁 Offre de lancement exclusive</div>
+                <div class="wl-reason-title">Offre de lancement exclusive</div>
                 <div class="wl-reason-desc">Un tarif préférentiel réservé aux bêta-testeurs — non disponible après le lancement public.</div>
               </div>
             </div>
             <div class="wl-reason">
-              <span class="wl-reason-icon">📬</span>
+              <span class="wl-reason-icon">🗳️</span>
               <div>
-                <div class="wl-reason-title">🗳️ Votre avis façonne le produit</div>
+                <div class="wl-reason-title">Votre avis façonne le produit</div>
                 <div class="wl-reason-desc">Quelles sources scanner, quel niveau de détail, quelles alertes — vous avez votre mot à dire.</div>
               </div>
             </div>
             <div class="wl-reason">
-              <span class="wl-reason-icon">🤝</span>
+              <span class="wl-reason-icon">🔕</span>
               <div>
-                <div class="wl-reason-title">🔕 Zéro spam — une seule notification</div>
+                <div class="wl-reason-title">Zéro spam — une seule notification</div>
                 <div class="wl-reason-desc">Un email à l'ouverture de votre accès bêta, c'est tout. Aucune newsletter, aucune relance.</div>
               </div>
             </div>
@@ -885,12 +872,12 @@
           <div class="reveal">
             <div class="spots-left">
               <div class="spots-glow"></div>
-              <div class="spots-number" id="spots-number"><span id="spots-count">0</span></div>
+              <div class="spots-number" id="spots-number"><span id="spots-count">15</span></div>
               <div class="spots-label">inscrits sur la liste bêta</div>
               <div class="spots-bar-wrap">
                 <div class="spots-bar-fill" id="spots-bar"></div>
               </div>
-              <div class="spots-bar-label">Objectif : 500 bêta-testeurs pour le lancement</div>
+              <div class="spots-bar-label">Objectif : 50 bêta-testeurs pour le lancement</div>
               <a href="form.html" class="btn-primary" id="cta-waitlist" style="width:100%;justify-content:center;margin-top:4px;">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
                 Rejoindre la bêta — gratuit
@@ -909,54 +896,54 @@
       <div class="section-inner" style="max-width:720px;">
         <div class="reveal" style="text-align:center;">
           <span class="section-tag">Questions fréquentes</span>
-          <h2 class="section-h2">Vous avez des questions ?<br><span class="text-gradient-primary">On répond.</span></h2>
+          <h2 class="section-h2">Vous avez des questions ?<br><span class="text-gradient-primary">On vous répond.</span></h2>
         </div>
 
         <div class="faq-list reveal">
           <div class="faq-item">
-            <button class="faq-q" data-faq="0">
+            <button class="faq-q" data-faq="0" aria-controls="faq-0">
               Quand la bêta sera-t-elle disponible ?
               <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
             </button>
-            <div class="faq-a" id="faq-0">Le lancement bêta est imminent. Les inscrits seront notifiés en priorité dès l'ouverture des accès — avant tout lancement public.</div>
+            <div class="faq-a" id="faq-0">Le lancement bêta est proche. Les inscrits seront notifiés en priorité dès l'ouverture des accès — avant tout lancement public.</div>
           </div>
           <div class="faq-item">
-            <button class="faq-q" data-faq="1">
+            <button class="faq-q" data-faq="1" aria-controls="faq-1">
               Mon email sera-t-il scanné en m'inscrivant ?
               <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
             </button>
             <div class="faq-a" id="faq-1">Non. L'email fourni lors de la préinscription sert uniquement à vous envoyer votre accès bêta. Aucune donnée personnelle ne sera analysée sans votre consentement explicite dans l'application.</div>
           </div>
           <div class="faq-item">
-            <button class="faq-q" data-faq="2">
+            <button class="faq-q" data-faq="2" aria-controls="faq-2">
               D'où proviennent les données analysées ?
               <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
             </button>
             <div class="faq-a" id="faq-2">Sources publiques et accessibles uniquement : bases de fuites connues, data brokers, moteurs de recherche, dark web indexé, profils publics. Rien d'illégal — tout ce qu'un inconnu patient pourrait trouver lui-même.</div>
           </div>
           <div class="faq-item">
-            <button class="faq-q" data-faq="3">
+            <button class="faq-q" data-faq="3" aria-controls="faq-3">
               L'accès bêta est-il gratuit ?
               <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
             </button>
             <div class="faq-a" id="faq-3">L'accès bêta est gratuit. Après le lancement public, les bêta-testeurs bénéficieront d'une offre préférentielle exclusive — non disponible pour les nouveaux inscrits.</div>
           </div>
           <div class="faq-item">
-            <button class="faq-q" data-faq="4">
+            <button class="faq-q" data-faq="4" aria-controls="faq-4">
               Scopaly est-il conforme au RGPD ?
               <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
             </button>
             <div class="faq-a" id="faq-4">Oui. Données hébergées en France, aucune revente à des tiers, suppression sur simple demande. Nous ne collectons que le strict nécessaire.</div>
           </div>
           <div class="faq-item">
-            <button class="faq-q" data-faq="5">
+            <button class="faq-q" data-faq="5" aria-controls="faq-5">
               Puis-je demander la suppression de mes données exposées ?
               <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
             </button>
             <div class="faq-a" id="faq-5">Oui. Scopaly permet de soumettre des demandes de suppression directement depuis votre rapport — vers les data brokers et les sources concernées. C'est l'une des fonctionnalités clés de la bêta.</div>
           </div>
           <div class="faq-item">
-            <button class="faq-q" data-faq="6">
+            <button class="faq-q" data-faq="6" aria-controls="faq-6">
               Quelles informations puis-je analyser ?
               <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
             </button>
@@ -975,7 +962,7 @@
         <span class="section-tag" style="display:block;text-align:center;margin-bottom:16px;">Accès bêta prioritaire</span>
         <h2 class="cta-h2">
           Reprenez le contrôle de<br>
-          <span class="text-gradient-shimmer">votre empreinte numérique.</span>
+          <span class="text-gradient-shimmer">votre vie privée.</span>
         </h2>
         <p class="cta-sub">Gratuit · Sans engagement · Hébergé en France · Conforme RGPD</p>
         <a href="form.html" class="btn-primary" style="font-size:16px;padding:16px 36px;margin:0 auto;display:inline-flex;" id="cta-bottom">
@@ -993,8 +980,8 @@
       <div class="footer-inner">
         <div class="footer-copy">© 2026 Scopaly — Tous droits réservés</div>
         <div class="footer-links">
-          <a href="#">Politique de confidentialite</a>
-          <a href="#">Mentions legales</a>
+          <a href="#">Politique de confidentialité</a>
+          <a href="#">Mentions légales</a>
           <a href="#">Contact</a>
         </div>
       </div>
@@ -1151,13 +1138,14 @@
 
       // ── FAQ accordion ─────────────────────────────────
       document.querySelectorAll('.faq-q').forEach(btn => {
+        btn.setAttribute('aria-expanded', 'false');
         btn.addEventListener('click', () => {
           const idx = btn.dataset.faq;
           const answer = document.getElementById('faq-' + idx);
           const isOpen = answer.classList.contains('open');
           document.querySelectorAll('.faq-a').forEach(a => a.classList.remove('open'));
-          document.querySelectorAll('.faq-q').forEach(b => b.classList.remove('open'));
-          if (!isOpen) { answer.classList.add('open'); btn.classList.add('open'); }
+          document.querySelectorAll('.faq-q').forEach(b => { b.classList.remove('open'); b.setAttribute('aria-expanded', 'false'); });
+          if (!isOpen) { answer.classList.add('open'); btn.classList.add('open'); btn.setAttribute('aria-expanded', 'true'); }
         });
       });
 
